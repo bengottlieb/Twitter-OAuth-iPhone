@@ -1,0 +1,173 @@
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc
+END
+OAServiceTicket.m
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc/OAServiceTicket.m
+END
+OAPlaintextSignatureProvider.m
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc/OAPlaintextSignatureProvider.m
+END
+NSMutableURLRequest+Parameters.m
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc/NSMutableURLRequest+Parameters.m
+END
+OADataFetcher.h
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc/OADataFetcher.h
+END
+OAToken_KeychainExtensions.h
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc/OAToken_KeychainExtensions.h
+END
+OAuthConsumer.h
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc/OAuthConsumer.h
+END
+OADataFetcher.m
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc/OADataFetcher.m
+END
+OAToken_KeychainExtensions.m
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc/OAToken_KeychainExtensions.m
+END
+OAToken.h
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc/OAToken.h
+END
+OAHMAC_SHA1SignatureProvider.h
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc/OAHMAC_SHA1SignatureProvider.h
+END
+OASignatureProviding.h
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc/OASignatureProviding.h
+END
+OAToken.m
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc/OAToken.m
+END
+OAMutableURLRequest.h
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc/OAMutableURLRequest.h
+END
+OAAsynchronousDataFetcher.h
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc/OAAsynchronousDataFetcher.h
+END
+OAHMAC_SHA1SignatureProvider.m
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc/OAHMAC_SHA1SignatureProvider.m
+END
+NSURL+Base.h
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc/NSURL+Base.h
+END
+OARequestParameter.h
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc/OARequestParameter.h
+END
+OAMutableURLRequest.m
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc/OAMutableURLRequest.m
+END
+OAConsumer.h
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc/OAConsumer.h
+END
+OAAsynchronousDataFetcher.m
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc/OAAsynchronousDataFetcher.m
+END
+NSString+URLEncoding.h
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc/NSString+URLEncoding.h
+END
+NSURL+Base.m
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc/NSURL+Base.m
+END
+OARequestParameter.m
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc/OARequestParameter.m
+END
+OAConsumer.m
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc/OAConsumer.m
+END
+NSString+URLEncoding.m
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc/NSString+URLEncoding.m
+END
+OAServiceTicket.h
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc/OAServiceTicket.h
+END
+NSMutableURLRequest+Parameters.h
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc/NSMutableURLRequest+Parameters.h
+END
+OAPlaintextSignatureProvider.h
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/ben/!svn/ver/5570/Public/Twitter+OAuth/OAuthConsumeriPhoneLib/OAuthConsumerSrc/OAPlaintextSignatureProvider.h
+END
