@@ -277,8 +277,9 @@ signatureProvider:(id<OASignatureProviding, NSObject>)aProvider
 
 
 - (NSString *) URLEncodedString: (NSString *) string {
+	CFStringRef preprocessedString = CFURLCreateStringByReplacingPercentEscapesUsingEncoding(kCFAllocatorDefault, (CFStringRef) string, CFSTR(""), kCFStringEncodingUTF8);
     NSString *result = (NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
-                                                                           (CFStringRef)string,
+                                                                           preprocessedString,
                                                                            NULL,
 																		   CFSTR("!*'();:@&=+$,/?%#[]"),
                                                                            kCFStringEncodingUTF8);
