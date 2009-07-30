@@ -1,6 +1,6 @@
 Twitter+OAuth Source and Example for iPhone
 Glommed together by Ben Gottlieb
-©2009 Stand Alone, Inc - all rights reserved.
+copyright 2009 Stand Alone, Inc - all rights reserved.
 License: BSD, If you use it, please include the following text somewhere in your application's user-facing text:
 "Includes Twitter+OAuth code by Ben Gottlieb"
 
