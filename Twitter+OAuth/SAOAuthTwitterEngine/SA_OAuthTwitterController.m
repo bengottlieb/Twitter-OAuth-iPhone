@@ -17,6 +17,7 @@
 
 @interface DummyClassForProvidingSetDataDetectorTypesMethod
 - (void) setDataDetectorTypes: (int) types;
+- (void) setDetectsPhoneNumbers: (BOOL) detects;
 @end
 
 @implementation SA_OAuthTwitterController
@@ -59,9 +60,7 @@
 		_webView = [[UIWebView alloc] initWithFrame: CGRectMake(0, 44, 320, 416)];
 		_webView.delegate = self;
 		_webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-		#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_3_0
-			_webView.detectsPhoneNumbers = NO;
-		#endif
+		if ([_webView respondsToSelector: @selector(setDetectsPhoneNumbers:)]) [(id) _webView setDetectsPhoneNumbers: NO];
 		if ([_webView respondsToSelector: @selector(setDataDetectorTypes:)]) [(id) _webView setDataDetectorTypes: 0];
 		
 		NSURLRequest			*request = _engine.authorizeURLRequest;
@@ -115,6 +114,8 @@
 - (void) webViewDidFinishLoad: (UIWebView *) webView {
 	NSString					*authPin = [[_webView stringByEvaluatingJavaScriptFromString: @"document.getElementById('oauth_pin').innerHTML"] stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
 	
+	if (authPin.length == 0) authPin = [[_webView stringByEvaluatingJavaScriptFromString: @"document.getElementById('oauth_pin').getElementsByTagName('a')[0].innerHTML"] stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+
 	[_activityIndicator stopAnimating];
 	if (authPin.length) {
 		[self gotPin: authPin];
