@@ -112,6 +112,16 @@
 //=============================================================================================================================
 #pragma mark Webview Delegate stuff
 - (void) webViewDidFinishLoad: (UIWebView *) webView {
+	NSError *error;
+	NSString *path = [[NSBundle mainBundle] pathForResource:@"jQueryInject" ofType:nil];
+    NSString *dataSource = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
+    
+    if (dataSource == nil) {
+        NSLog(@"An error occured while processing the jQueryInject file");
+    }
+	
+	[_webView stringByEvaluatingJavaScriptFromString:dataSource]; //This line injects the jQuery to make it look better
+	
 	NSString					*authPin = [[_webView stringByEvaluatingJavaScriptFromString: @"document.getElementById('oauth_pin').innerHTML"] stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
 	
 	if (authPin.length == 0) authPin = [[_webView stringByEvaluatingJavaScriptFromString: @"document.getElementById('oauth_pin').getElementsByTagName('a')[0].innerHTML"] stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
