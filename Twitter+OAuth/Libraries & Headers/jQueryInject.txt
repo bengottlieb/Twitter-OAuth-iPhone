@@ -25,5 +25,6 @@ $("h4").html($("h4").html().replace(/This application/, '<br/><br/>This applicat
 $('.buttons').css({'margin-left' : '-17px' , 'width':'300'});
 $('#deny').css({'-webkit-transform': 'scale(0.9)'});
 $('#allow').css({'-webkit-transform': 'scale(0.9)'});
+$('#oauth_pin').css({'-webkit-transform': 'scale(0.5)'});
 $('.newtos').css({'border':'1px solid #A9BF74', 'background-color':'#E8FECD'});
 $('.newtos p').css({'margin':'8px'});

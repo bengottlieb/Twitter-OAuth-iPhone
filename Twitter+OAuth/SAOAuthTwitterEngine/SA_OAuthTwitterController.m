@@ -113,7 +113,7 @@
 #pragma mark Webview Delegate stuff
 - (void) webViewDidFinishLoad: (UIWebView *) webView {
 	NSError *error;
-	NSString *path = [[NSBundle mainBundle] pathForResource:@"jQueryInject" ofType:nil];
+	NSString *path = [[NSBundle mainBundle] pathForResource: @"jQueryInject" ofType: @"txt"];
     NSString *dataSource = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
     
     if (dataSource == nil) {

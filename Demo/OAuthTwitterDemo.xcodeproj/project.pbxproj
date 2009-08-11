@@ -33,6 +33,7 @@
 		B5BC1F86101A36F0009820BB /* SA_OAuthTwitterEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = B5BC1F83101A36F0009820BB /* SA_OAuthTwitterEngine.m */; };
 		B5BC1F87101A36F0009820BB /* SA_OAuthTwitterController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5BC1F85101A36F0009820BB /* SA_OAuthTwitterController.m */; };
 		B5BC2313101A63F2009820BB /* libOAuth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B5BC2312101A63F2009820BB /* libOAuth.a */; };
+		B5FA71731031A0E900E12777 /* jQueryInject.txt in Resources */ = {isa = PBXBuildFile; fileRef = B5FA71721031A0E900E12777 /* jQueryInject.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -102,6 +103,7 @@
 		B5BC1F84101A36F0009820BB /* SA_OAuthTwitterController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SA_OAuthTwitterController.h; sourceTree = "<group>"; };
 		B5BC1F85101A36F0009820BB /* SA_OAuthTwitterController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SA_OAuthTwitterController.m; sourceTree = "<group>"; };
 		B5BC2312101A63F2009820BB /* libOAuth.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libOAuth.a; path = "../Libraries & Headers/libOAuth.a"; sourceTree = "<group>"; };
+		B5FA71721031A0E900E12777 /* jQueryInject.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = jQueryInject.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -175,6 +177,7 @@
 		B5901B09101A280800CF32FA /* Libraries & Headers */ = {
 			isa = PBXGroup;
 			children = (
+				B5FA71721031A0E900E12777 /* jQueryInject.txt */,
 				B5901B0A101A280800CF32FA /* OAuthConsumer */,
 			);
 			path = "Libraries & Headers";
@@ -311,6 +314,7 @@
 			files = (
 				B5901B94101A294400CF32FA /* MainWindow.xib in Resources */,
 				B5901B96101A294400CF32FA /* OAuthTwitterDemoViewController.xib in Resources */,
+				B5FA71731031A0E900E12777 /* jQueryInject.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
