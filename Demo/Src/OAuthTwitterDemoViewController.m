@@ -10,8 +10,8 @@
 #import "SA_OAuthTwitterEngine.h"
 
 
-#define kOAuthConsumerKey				@""					//REPLACE ME!
-#define kOAuthConsumerSecret			@""					//REPLACE ME!
+#define kOAuthConsumerKey				@""		//REPLACE ME
+#define kOAuthConsumerSecret			@""		//REPLACE ME
 
 
 @implementation OAuthTwitterDemoViewController
@@ -27,7 +27,7 @@
 	[defaults synchronize];
 }
 
-- (NSString *) cachedTwitterOAuthDatForUsername: (NSString *) username {
+- (NSString *) cachedTwitterOAuthDataForUsername: (NSString *) username {
 	return [[NSUserDefaults standardUserDefaults] objectForKey: @"authData"];
 }
 

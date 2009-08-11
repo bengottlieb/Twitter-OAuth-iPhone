@@ -83,7 +83,7 @@
 	if (_accessToken.key && _accessToken.secret) return YES;
 	
 	//first, check for cached creds
-	NSString					*accessTokenString = [_delegate respondsToSelector: @selector(cachedTwitterOAuthDatForUsername:)] ? [(id) _delegate cachedTwitterOAuthDatForUsername: self.username] : @"";
+	NSString					*accessTokenString = [_delegate respondsToSelector: @selector(cachedTwitterOAuthDataForUsername:)] ? [(id) _delegate cachedTwitterOAuthDataForUsername: self.username] : @"";
 
 	if (accessTokenString.length) {				
 		[_accessToken release];

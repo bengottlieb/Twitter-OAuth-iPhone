@@ -14,7 +14,7 @@
 @protocol SA_OAuthTwitterEngineDelegate 
 @optional
 - (void) storeCachedTwitterOAuthData: (NSString *) data forUsername: (NSString *) username;					//implement these methods to store off the creds returned by Twitter
-- (NSString *) cachedTwitterOAuthDatForUsername: (NSString *) username;										//if you don't do this, the user will have to re-authenticate every time they run
+- (NSString *) cachedTwitterOAuthDataForUsername: (NSString *) username;										//if you don't do this, the user will have to re-authenticate every time they run
 - (void) twitterOAuthConnectionFailedWithData: (NSData *) data; 
 @end
 
