@@ -26,6 +26,7 @@
 	SA_OAuthTwitterEngine						*_engine;
 	UIWebView									*_webView;
 	UINavigationBar								*_navBar;
+	UIImageView									*_backgroundView;
 	
 	id <SA_OAuthTwitterControllerDelegate>		_delegate;
 	UIActivityIndicatorView						*_activityIndicator;

@@ -25,6 +25,8 @@
 
 
 - (void) dealloc {
+	[_backgroundView release];
+	
 	_webView.delegate = nil;
 	[_webView loadRequest: [NSURLRequest requestWithURL: [NSURL URLWithString: @""]]];
 	[_webView release];
@@ -95,6 +97,18 @@
 - (void) loadView {
 	[super loadView];
 	self.view = [[[UIView alloc] initWithFrame: CGRectMake(0, 0, 320, 416)] autorelease];
+	_backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bgImage.png"]];
+	_backgroundView.frame =  CGRectMake(0, 44, 320, 416);
+	UIActivityIndicatorView* spinner = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge] autorelease];
+	[spinner startAnimating];
+	spinner.frame = CGRectMake((320 / 2) - (spinner.bounds.size.width / 2),
+							   (416 / 2) - (spinner.bounds.size.height / 2),
+							   spinner.bounds.size.width,
+							   spinner.bounds.size.height);
+	[_backgroundView addSubview:spinner];
+	
+	[self.view addSubview:_backgroundView];
+	
 	[self.view addSubview: _webView];
 	
 	_navBar = [[[UINavigationBar alloc] initWithFrame: CGRectMake(0, 0, 320, 44)] autorelease];
@@ -105,6 +119,7 @@
 	navItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithCustomView: _activityIndicator] autorelease];
 	
 	[_navBar pushNavigationItem: navItem animated: NO];
+	_navBar.tintColor = kGateGuruTintColor;
 	
 }
 
@@ -130,6 +145,11 @@
 	if (authPin.length) {
 		[self gotPin: authPin];
 	} 
+	if ([_webView isLoading] || authPin.length) {
+		[_webView setHidden:YES];
+	} else {
+		[_webView setHidden:NO];
+	}
 }
 
 - (void) webViewDidStartLoad: (UIWebView *) webView {
@@ -145,7 +165,7 @@
 		[self denied];
 		return NO;
 	}
-
+	[_webView setHidden:YES];
 	return YES;
 }
 
