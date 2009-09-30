@@ -15,6 +15,9 @@
 
 #import "SA_OAuthTwitterController.h"
 
+// Constants
+static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
+
 @interface DummyClassForProvidingSetDataDetectorTypesMethod
 - (void) setDataDetectorTypes: (int) types;
 - (void) setDetectsPhoneNumbers: (BOOL) detects;
@@ -96,8 +99,8 @@
 #pragma mark View Controller Stuff
 - (void) loadView {
 	[super loadView];
-	self.view = [[[UIView alloc] initWithFrame: CGRectMake(0, 0, 320, 416)] autorelease];
-	_backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bgImage.png"]];
+	self.view = [[[UIView alloc] initWithFrame: CGRectMake(0, 0, 320, 416)] autorelease];	
+	_backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:kGGTwitterLoadingBackgroundImage]];
 	_backgroundView.frame =  CGRectMake(0, 44, 320, 416);
 	UIActivityIndicatorView* spinner = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge] autorelease];
 	[spinner startAnimating];
