@@ -121,7 +121,6 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 	navItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem: UIBarButtonSystemItemCancel target: self action: @selector(cancel:)] autorelease];
 	
 	[_navBar pushNavigationItem: navItem animated: NO];
-	_navBar.tintColor = kGateGuruTintColor;
 	
 }
 
