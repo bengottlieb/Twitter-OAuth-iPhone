@@ -30,6 +30,8 @@
 	
 	id <SA_OAuthTwitterControllerDelegate>		_delegate;
 	UIActivityIndicatorView						*_activityIndicator;
+
+	UIInterfaceOrientation                      _orientation;
 }
 
 
@@ -37,9 +39,12 @@
 @property (nonatomic, readwrite, assign) id <SA_OAuthTwitterControllerDelegate> delegate;
 @property (nonatomic, readonly) UINavigationBar *navigationBar;
 
+@property (nonatomic) UIInterfaceOrientation orientation;
+
++ (SA_OAuthTwitterController *) controllerToEnterCredentialsWithTwitterEngine: (SA_OAuthTwitterEngine *) engine delegate: (id <SA_OAuthTwitterControllerDelegate>) delegate forOrientation:(UIInterfaceOrientation)theOrientation;
 + (SA_OAuthTwitterController *) controllerToEnterCredentialsWithTwitterEngine: (SA_OAuthTwitterEngine *) engine delegate: (id <SA_OAuthTwitterControllerDelegate>) delegate;
 + (BOOL) credentialEntryRequiredWithTwitterEngine: (SA_OAuthTwitterEngine *) engine;
 
 
-- (id) initWithEngine: (SA_OAuthTwitterEngine *) engine;
+- (id) initWithEngine: (SA_OAuthTwitterEngine *) engine andOrientation:(UIInterfaceOrientation)theOrientation;
 @end
