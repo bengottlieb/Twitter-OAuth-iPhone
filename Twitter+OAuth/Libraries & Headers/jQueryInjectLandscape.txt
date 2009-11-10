@@ -1,6 +1,7 @@
 $('html').css({'-webkit-background-size':'360px'});
 $('body').css({'font-size':'12px','background':'#9AE4E8'});
 $('#header').width(430);
+$('#header').height(10);
 $('.signin-content').css({'padding' : '15px','width' : '430px'});	
 $('#twitainer').width(430);
 $('#twitainer').css({'margin-left' : '8px'});

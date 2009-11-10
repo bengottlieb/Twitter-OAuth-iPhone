@@ -71,7 +71,8 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 			_webView = [[UIWebView alloc] initWithFrame: CGRectMake(0, 32, 480, 288)];
 		else
 			_webView = [[UIWebView alloc] initWithFrame: CGRectMake(0, 44, 320, 416)];
-			
+		
+		_webView.alpha = 0.0;
 		_webView.delegate = self;
 		_webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 		if ([_webView respondsToSelector: @selector(setDetectsPhoneNumbers:)]) [(id) _webView setDetectsPhoneNumbers: NO];
@@ -121,8 +122,7 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 								   spinner.bounds.size.height);
 		
 		_navBar = [[[UINavigationBar alloc] initWithFrame: CGRectMake(0, 0, 480, 32)] autorelease];
-	}
-	else {
+	} else {
 		self.view = [[[UIView alloc] initWithFrame: CGRectMake(0, 0, 320, 416)] autorelease];	
 		_backgroundView.frame =  CGRectMake(0, 44, 320, 416);
 		spinner.frame = CGRectMake((320 / 2) - (spinner.bounds.size.width / 2),
@@ -132,7 +132,10 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 
 		_navBar = [[[UINavigationBar alloc] initWithFrame: CGRectMake(0, 0, 320, 44)] autorelease];
 	}
+	_navBar.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;
 	[_backgroundView addSubview:spinner];
+	_backgroundView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+	self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
 	if ( !UIInterfaceOrientationIsLandscape( self.orientation ) )
 		[self.view addSubview:_backgroundView];
@@ -148,25 +151,18 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    return (interfaceOrientation == self.orientation);
+    return YES;(interfaceOrientation == self.orientation);
+}
+
+- (void) didRotateFromInterfaceOrientation: (UIInterfaceOrientation) fromInterfaceOrientation {
+	self.orientation = self.interfaceOrientation;
+	[self performInjection];
 }
 
 //=============================================================================================================================
 #pragma mark Webview Delegate stuff
 - (void) webViewDidFinishLoad: (UIWebView *) webView {
-	NSError *error;
-	NSString *path = [[NSBundle mainBundle]
-					  pathForResource:
-					  UIInterfaceOrientationIsLandscape( self.orientation ) ? @"jQueryInjectLandscape" : @"jQueryInject"
-					  ofType:@"txt"];
-
-    NSString *dataSource = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
-
-    if (dataSource == nil) {
-        NSLog(@"An error occured while processing the jQueryInject file");
-    }
-
-	[_webView stringByEvaluatingJavaScriptFromString:dataSource]; //This line injects the jQuery to make it look better
+	[self performInjection];
 
 	NSString					*authPin = [[_webView stringByEvaluatingJavaScriptFromString: @"document.getElementById('oauth_pin').innerHTML"] stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
 
@@ -177,10 +173,24 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 		[self gotPin: authPin];
 	} 
 	if ([_webView isLoading] || authPin.length) {
-		[_webView setHidden:YES];
+		_webView.alpha = 0.0;
 	} else {
-		[_webView setHidden:NO];
+		_webView.alpha = 1.0;
 	}
+}
+
+- (void) performInjection {
+	NSError					*error;
+	NSString				*filename = UIInterfaceOrientationIsLandscape(self.orientation ) ? @"jQueryInjectLandscape" : @"jQueryInject";
+	NSString				*path = [[NSBundle mainBundle] pathForResource: filename ofType: @"txt"];
+	
+    NSString *dataSource = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
+	
+    if (dataSource == nil) {
+        NSLog(@"An error occured while processing the jQueryInject file");
+    }
+	
+	[_webView stringByEvaluatingJavaScriptFromString:dataSource]; //This line injects the jQuery to make it look better	
 }
 
 - (void) webViewDidStartLoad: (UIWebView *) webView {
@@ -196,7 +206,7 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 		[self denied];
 		return NO;
 	}
-	[_webView setHidden:YES];
+	if (navigationType != UIWebViewNavigationTypeOther) _webView.alpha = 0.1;
 	return YES;
 }
 
