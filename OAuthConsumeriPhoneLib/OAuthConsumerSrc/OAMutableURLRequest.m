@@ -153,7 +153,7 @@ signatureProvider:(id<OASignatureProviding, NSObject>)aProvider
 	
 	if (token.pin.length) oauthHeader = [oauthHeader stringByAppendingFormat: @", oauth_verifier=\"%@\"", token.pin];					//added for the Twitter OAuth implementation
     [self setValue:oauthHeader forHTTPHeaderField:@"Authorization"];
-	NSLog(@"Headers: %@", [self allHTTPHeaderFields]);
+	//NSLog(@"Headers: %@", [self allHTTPHeaderFields]);
 }
 
 #pragma mark -
@@ -200,7 +200,7 @@ signatureProvider:(id<OASignatureProviding, NSObject>)aProvider
 					 [self URLEncodedString: [self URLStringWithoutQueryFromURL: [self URL]]],
 					 [self URLEncodedString: normalizedRequestParameters]];
 	
-	NSLog(@"String: %@, Array: %@", ret, normalizedRequestParameters);
+	//NSLog(@"String: %@, Array: %@", ret, normalizedRequestParameters);
 	return ret;
 }
 
