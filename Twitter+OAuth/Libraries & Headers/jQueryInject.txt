@@ -9,6 +9,7 @@ $('#login_form').width(30);
 $('#content').width(270);
 $('#content').css({'margin':'0px','float':'left'});
 $('.tos').hide();
+$('.newtos').remove();
 $('.newtos').css({'text-align':'left', 'border':'1px solid red','color':'#555555','font-size':'12px','line-height':'1.3','margin':'20px 15px 5px'});
 $('.newtos p').css({'margin' : '8px'});
 $('h2').hide();
