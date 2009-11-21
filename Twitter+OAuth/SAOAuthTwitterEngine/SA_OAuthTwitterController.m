@@ -155,7 +155,7 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    return YES;(interfaceOrientation == self.orientation);
+    return YES;
 }
 
 - (void) didRotateFromInterfaceOrientation: (UIInterfaceOrientation) fromInterfaceOrientation {
@@ -167,6 +167,7 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 //=============================================================================================================================
 #pragma mark Webview Delegate stuff
 - (void) webViewDidFinishLoad: (UIWebView *) webView {
+	_loading = NO;
 	[self performInjection];
 
 	NSString					*authPin = [[_webView stringByEvaluatingJavaScriptFromString: @"document.getElementById('oauth_pin').innerHTML"] stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
@@ -176,8 +177,7 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 	[UIView beginAnimations: nil context: nil];
 	_blockerView.alpha = 0.0;
 	[UIView commitAnimations];
-
-	//[_activityIndicator stopAnimating];
+	
 	if (authPin.length) {
 		[self gotPin: authPin];
 	} 
@@ -189,6 +189,8 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 }
 
 - (void) performInjection {
+	if (_loading) return;
+	
 	NSError					*error;
 	NSString				*filename = UIInterfaceOrientationIsLandscape(self.orientation ) ? @"jQueryInjectLandscape" : @"jQueryInject";
 	NSString				*path = [[NSBundle mainBundle] pathForResource: filename ofType: @"txt"];
@@ -204,6 +206,7 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 
 - (void) webViewDidStartLoad: (UIWebView *) webView {
 	//[_activityIndicator startAnimating];
+	_loading = YES;
 	[UIView beginAnimations: nil context: nil];
 	_blockerView.alpha = 1.0;
 	[UIView commitAnimations];
