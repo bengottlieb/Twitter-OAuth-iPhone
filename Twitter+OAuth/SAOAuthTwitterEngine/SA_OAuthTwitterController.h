@@ -29,7 +29,7 @@
 	UIImageView									*_backgroundView;
 	
 	id <SA_OAuthTwitterControllerDelegate>		_delegate;
-	UIActivityIndicatorView						*_activityIndicator;
+	UIView										*_blockerView;
 
 	UIInterfaceOrientation                      _orientation;
 }

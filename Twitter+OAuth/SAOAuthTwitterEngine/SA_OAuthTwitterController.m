@@ -10,6 +10,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <QuartzCore/QuartzCore.h>
 
 #import "SA_OAuthTwitterEngine.h"
 
@@ -34,8 +35,6 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 	[_webView loadRequest: [NSURLRequest requestWithURL: [NSURL URLWithString: @""]]];
 	[_webView release];
 	
-	[_activityIndicator release];
-	_activityIndicator = nil;
 	self.view = nil;
 	self.engine = nil;
 	[super dealloc];
@@ -64,10 +63,7 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 		self.engine = engine;
 		self.orientation = theOrientation;
 		
-		_activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle: UIActivityIndicatorViewStyleWhite];
-		_activityIndicator.hidesWhenStopped = YES;
-
-		if ( UIInterfaceOrientationIsLandscape( self.orientation ) )
+		if (UIInterfaceOrientationIsLandscape( self.orientation ) )
 			_webView = [[UIWebView alloc] initWithFrame: CGRectMake(0, 32, 480, 288)];
 		else
 			_webView = [[UIWebView alloc] initWithFrame: CGRectMake(0, 44, 320, 416)];
@@ -110,41 +106,49 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 - (void) loadView {
 	[super loadView];
 
-	UIActivityIndicatorView* spinner = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge] autorelease];
-	[spinner startAnimating];
 	_backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:kGGTwitterLoadingBackgroundImage]];
 	if ( UIInterfaceOrientationIsLandscape( self.orientation ) ) {
 		self.view = [[[UIView alloc] initWithFrame: CGRectMake(0, 0, 480, 288)] autorelease];	
 		_backgroundView.frame =  CGRectMake(0, 44, 480, 288);
-		spinner.frame = CGRectMake((480 / 2) - (spinner.bounds.size.width / 2),
-								   (288 / 2) - (spinner.bounds.size.height / 2),
-								   spinner.bounds.size.width,
-								   spinner.bounds.size.height);
 		
 		_navBar = [[[UINavigationBar alloc] initWithFrame: CGRectMake(0, 0, 480, 32)] autorelease];
 	} else {
 		self.view = [[[UIView alloc] initWithFrame: CGRectMake(0, 0, 320, 416)] autorelease];	
 		_backgroundView.frame =  CGRectMake(0, 44, 320, 416);
-		spinner.frame = CGRectMake((320 / 2) - (spinner.bounds.size.width / 2),
-								   (416 / 2) - (spinner.bounds.size.height / 2),
-								   spinner.bounds.size.width,
-								   spinner.bounds.size.height);
-
 		_navBar = [[[UINavigationBar alloc] initWithFrame: CGRectMake(0, 0, 320, 44)] autorelease];
 	}
 	_navBar.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;
-	[_backgroundView addSubview:spinner];
 	_backgroundView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-	if ( !UIInterfaceOrientationIsLandscape( self.orientation ) )
-		[self.view addSubview:_backgroundView];
+	if (!UIInterfaceOrientationIsLandscape( self.orientation)) [self.view addSubview:_backgroundView];
 	
 	[self.view addSubview: _webView];
-	
 	[self.view addSubview: _navBar];
 	
-	UINavigationItem				*navItem = [[[UINavigationItem alloc] initWithTitle: NSLocalizedString(@"Twitter Info", @"Twitter Info")] autorelease];
+	_blockerView = [[[UIView alloc] initWithFrame: CGRectMake(0, 0, 200, 60)] autorelease];
+	_blockerView.backgroundColor = [UIColor colorWithWhite: 0.0 alpha: 0.8];
+	_blockerView.center = CGPointMake(self.view.bounds.size.width / 2, self.view.bounds.size.height / 2);
+	_blockerView.alpha = 0.0;
+	_blockerView.clipsToBounds = YES;
+	if ([_blockerView.layer respondsToSelector: @selector(setCornerRadius:)]) [(id) _blockerView.layer setCornerRadius: 10];
+	
+	UILabel								*label = [[[UILabel alloc] initWithFrame: CGRectMake(0, 5, _blockerView.bounds.size.width, 15)] autorelease];
+	label.text = NSLocalizedString(@"Please Wait…", nil);
+	label.backgroundColor = [UIColor clearColor];
+	label.textColor = [UIColor whiteColor];
+	label.textAlignment = UITextAlignmentCenter;
+	label.font = [UIFont boldSystemFontOfSize: 15];
+	[_blockerView addSubview: label];
+	
+	UIActivityIndicatorView				*spinner = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle: UIActivityIndicatorViewStyleWhite] autorelease];
+	
+	spinner.center = CGPointMake(_blockerView.bounds.size.width / 2, _blockerView.bounds.size.height / 2 + 10);
+	[_blockerView addSubview: spinner];
+	[self.view addSubview: _blockerView];
+	[spinner startAnimating];
+	
+	UINavigationItem				*navItem = [[[UINavigationItem alloc] initWithTitle: NSLocalizedString(@"Twitter Info", nil)] autorelease];
 	navItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem: UIBarButtonSystemItemCancel target: self action: @selector(cancel:)] autorelease];
 	
 	[_navBar pushNavigationItem: navItem animated: NO];
@@ -156,6 +160,7 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 
 - (void) didRotateFromInterfaceOrientation: (UIInterfaceOrientation) fromInterfaceOrientation {
 	self.orientation = self.interfaceOrientation;
+	_blockerView.center = CGPointMake(self.view.bounds.size.width / 2, self.view.bounds.size.height / 2);
 	[self performInjection];
 }
 
@@ -167,8 +172,12 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 	NSString					*authPin = [[_webView stringByEvaluatingJavaScriptFromString: @"document.getElementById('oauth_pin').innerHTML"] stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
 
 	if (authPin.length == 0) authPin = [[_webView stringByEvaluatingJavaScriptFromString: @"document.getElementById('oauth_pin').getElementsByTagName('a')[0].innerHTML"] stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+	
+	[UIView beginAnimations: nil context: nil];
+	_blockerView.alpha = 0.0;
+	[UIView commitAnimations];
 
-	[_activityIndicator stopAnimating];
+	//[_activityIndicator stopAnimating];
 	if (authPin.length) {
 		[self gotPin: authPin];
 	} 
@@ -194,7 +203,10 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 }
 
 - (void) webViewDidStartLoad: (UIWebView *) webView {
-	[_activityIndicator startAnimating];
+	//[_activityIndicator startAnimating];
+	[UIView beginAnimations: nil context: nil];
+	_blockerView.alpha = 1.0;
+	[UIView commitAnimations];
 }
 
 
