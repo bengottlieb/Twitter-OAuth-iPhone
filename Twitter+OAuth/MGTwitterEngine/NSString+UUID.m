@@ -20,8 +20,8 @@
     // Get the string representation of the UUID
     NSString *newUUID = (NSString*)CFUUIDCreateString(nil, uuidObj);
     CFRelease(uuidObj);
-    //return [newUUID autorelease];
-	return newUUID;
+    return [newUUID autorelease];
+	//return newUUID;
 }
 
 
