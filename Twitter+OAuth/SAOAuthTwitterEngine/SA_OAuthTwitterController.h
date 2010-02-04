@@ -32,7 +32,7 @@
 	UIView										*_blockerView;
 
 	UIInterfaceOrientation                      _orientation;
-	BOOL										_loading;
+	BOOL										_loading, _firstLoad;
 }
 
 

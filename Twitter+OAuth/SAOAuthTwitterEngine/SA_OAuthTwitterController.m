@@ -62,6 +62,7 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 	if (self = [super init]) {
 		self.engine = engine;
 		self.orientation = theOrientation;
+		_firstLoad = YES;
 		
 		if (UIInterfaceOrientationIsLandscape( self.orientation ) )
 			_webView = [[UIWebView alloc] initWithFrame: CGRectMake(0, 32, 480, 288)];
@@ -161,18 +162,20 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 - (void) didRotateFromInterfaceOrientation: (UIInterfaceOrientation) fromInterfaceOrientation {
 	self.orientation = self.interfaceOrientation;
 	_blockerView.center = CGPointMake(self.view.bounds.size.width / 2, self.view.bounds.size.height / 2);
-	[self performInjection];
+//	[self performInjection];			//removed due to twitter update
 }
 
 //=============================================================================================================================
 #pragma mark Webview Delegate stuff
 - (void) webViewDidFinishLoad: (UIWebView *) webView {
 	_loading = NO;
-	[self performInjection];
+	//[self performInjection];
+	if (_firstLoad) {
+		[_webView performSelector: @selector(stringByEvaluatingJavaScriptFromString:) withObject: @"window.scrollBy(0,200)" afterDelay: 0];
+		_firstLoad = NO;
+	}
 
-	NSString					*authPin = [[_webView stringByEvaluatingJavaScriptFromString: @"document.getElementById('oauth_pin').innerHTML"] stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
-
-	if (authPin.length == 0) authPin = [[_webView stringByEvaluatingJavaScriptFromString: @"document.getElementById('oauth_pin').getElementsByTagName('a')[0].innerHTML"] stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+	NSString					*authPin = [[_webView stringByEvaluatingJavaScriptFromString: @"document.getElementById('oauth-pin').innerHTML"] stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
 	
 	[UIView beginAnimations: nil context: nil];
 	_blockerView.alpha = 0.0;
