@@ -220,7 +220,7 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 	NSData				*data = [request HTTPBody];
 	char				*raw = data ? (char *) [data bytes] : "";
 	
-	if (raw && strstr(raw, "cancel=Deny")) {
+	if (raw && strstr(raw, "cancel=")) {
 		[self denied];
 		return NO;
 	}
