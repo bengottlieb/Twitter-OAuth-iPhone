@@ -40,7 +40,7 @@
 
 @property (nonatomic, readwrite, retain) NSString *consumerSecret, *consumerKey;
 @property (nonatomic, readwrite, retain) NSURL *requestTokenURL, *accessTokenURL, *authorizeURL;				//you shouldn't need to touch these. Just in case...
-
+@property (nonatomic, readonly) BOOL OAuthSetup;
 
 + (SA_OAuthTwitterEngine *) OAuthTwitterEngineWithDelegate: (NSObject *) delegate;
 - (SA_OAuthTwitterEngine *) initOAuthWithDelegate: (NSObject *) delegate;

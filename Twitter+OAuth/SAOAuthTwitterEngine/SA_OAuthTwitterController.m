@@ -61,6 +61,7 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 - (id) initWithEngine: (SA_OAuthTwitterEngine *) engine andOrientation:(UIInterfaceOrientation)theOrientation {
 	if (self = [super init]) {
 		self.engine = engine;
+		if (!engine.OAuthSetup) [_engine requestRequestToken];
 		self.orientation = theOrientation;
 		_firstLoad = YES;
 		
@@ -76,7 +77,6 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 		if ([_webView respondsToSelector: @selector(setDataDetectorTypes:)]) [(id) _webView setDataDetectorTypes: 0];
 		
 		NSURLRequest			*request = _engine.authorizeURLRequest;
-		
 		[_webView loadRequest: request];
 	}
 	return self;

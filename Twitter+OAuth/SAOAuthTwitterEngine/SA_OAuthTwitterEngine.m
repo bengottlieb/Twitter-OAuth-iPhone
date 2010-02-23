@@ -70,12 +70,14 @@
 
 //=============================================================================================================================
 #pragma mark OAuth Code
+- (BOOL) OAuthSetup {
+	return _consumer != nil;
+}
 - (OAConsumer *) consumer {
 	if (_consumer) return _consumer;
 	
 	NSAssert(self.consumerKey.length > 0 && self.consumerSecret.length > 0, @"You must first set your Consumer Key and Consumer Secret properties. Visit http://twitter.com/oauth_clients/new to obtain these.");
 	_consumer = [[OAConsumer alloc] initWithKey: self.consumerKey secret: self.consumerSecret];
-	
 	return _consumer;
 }
 
@@ -124,14 +126,19 @@
 	if ([_delegate respondsToSelector: @selector(storeCachedTwitterOAuthData:forUsername:)]) [(id) _delegate storeCachedTwitterOAuthData: @"" forUsername: self.username];
 	[_accessToken release];
 	_accessToken = nil;
+	[_consumer release];
+	_consumer = nil;
+	self.pin = nil;
+	[_requestToken release];
+	_requestToken = nil;
 }
 
 - (void) setPin: (NSString *) pin {
 	[_pin autorelease];
 	_pin = [pin retain];
 	
-	if (pin.length) _accessToken.pin = pin;
-	if (pin.length) _requestToken.pin = pin;
+	_accessToken.pin = pin;
+	_requestToken.pin = pin;
 }
 
 //=============================================================================================================================
