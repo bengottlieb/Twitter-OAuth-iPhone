@@ -43,12 +43,13 @@
 @synthesize consumerSecret = _consumerSecret, consumerKey = _consumerKey;
 
 - (void) dealloc {
-	[_accessToken release];
-	[_requestToken release];
 	self.pin = nil;
 	self.authorizeURL = nil;
 	self.requestTokenURL = nil;
 	self.accessTokenURL = nil;
+	
+	[_accessToken release];
+	[_requestToken release];
 	[_consumer release];
 	[super dealloc];
 }
