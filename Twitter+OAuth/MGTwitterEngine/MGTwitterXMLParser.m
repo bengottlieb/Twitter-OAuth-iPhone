@@ -111,14 +111,12 @@ connectionIdentifier:(NSString *)theIdentifier requestType:(MGTwitterRequestType
         [currentNode setObject:boolNumber forKey:elementName];
     } else if ([elementName isEqualToString:@"created_at"]) {
         // Change date-string into an NSDate.
-		
-		//had to remove for iPhone
-		/*
-        NSDate *creationDate = [NSDate dateWithNaturalLanguageString:[currentNode objectForKey:elementName]];
-        if (creationDate) {
-            [currentNode setObject:creationDate forKey:elementName];
-        }
-		*/
+		#if !TARGET_OS_IPHONE
+			NSDate *creationDate = [NSDate dateWithNaturalLanguageString:[currentNode objectForKey:elementName]];
+			if (creationDate) {
+				[currentNode setObject:creationDate forKey:elementName];
+			}
+		#endif
     }
 }
 

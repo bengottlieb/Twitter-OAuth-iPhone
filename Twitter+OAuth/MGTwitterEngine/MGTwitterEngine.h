@@ -21,9 +21,17 @@
     NSString *_clientURL;
     NSString *_clientSourceToken;
 	NSString *_APIDomain;
+#if YAJL_AVAILABLE
+	NSString *_searchDomain;
+#endif
     BOOL _secureConnection;
 	BOOL _clearsCookies;
+#if YAJL_AVAILABLE
+	MGTwitterEngineDeliveryOptions _deliveryOptions;
+#endif
 }
+
+#pragma mark Class management
 
 // Constructors
 + (MGTwitterEngine *)twitterEngineWithDelegate:(NSObject *)delegate;
@@ -41,10 +49,18 @@
 - (void)setClientName:(NSString *)name version:(NSString *)version URL:(NSString *)url token:(NSString *)token;
 - (NSString *)APIDomain;
 - (void)setAPIDomain:(NSString *)domain;
+#if YAJL_AVAILABLE
+- (NSString *)searchDomain;
+- (void)setSearchDomain:(NSString *)domain;
+#endif
 - (BOOL)usesSecureConnection; // YES = uses HTTPS, default is YES
 - (void)setUsesSecureConnection:(BOOL)flag;
 - (BOOL)clearsCookies; // YES = deletes twitter.com cookies when setting username/password, default is NO (see README.txt)
 - (void)setClearsCookies:(BOOL)flag;
+#if YAJL_AVAILABLE
+- (MGTwitterEngineDeliveryOptions)deliveryOptions;
+- (void)setDeliveryOptions:(MGTwitterEngineDeliveryOptions)deliveryOptions;
+#endif
 
 // Connection methods
 - (int)numberOfConnections;
@@ -59,62 +75,132 @@
 // Retrieved images are sent to the delegate via the -imageReceived:forRequest: method.
 - (NSString *)getImageAtURL:(NSString *)urlString;
 
+#pragma mark REST API methods
+
 // ======================================================================================================
-// Twitter API methods
-// See Twitter API docs at: http://apiwiki.twitter.com/REST+API+Documentation
+// Twitter REST API methods
+// See documentation at: http://apiwiki.twitter.com/Twitter-API-Documentation
 // All methods below return a unique connection identifier.
 // ======================================================================================================
 
+// Status methods
+
+- (NSString *)getPublicTimeline; // statuses/public_timeline
+
+- (NSString *)getFollowedTimelineSinceID:(unsigned long)sinceID startingAtPage:(int)pageNum count:(int)count; // statuses/friends_timeline
+- (NSString *)getFollowedTimelineSinceID:(unsigned long)sinceID withMaximumID:(unsigned long)maxID startingAtPage:(int)pageNum count:(int)count; // statuses/friends_timeline
+
+- (NSString *)getUserTimelineFor:(NSString *)username sinceID:(unsigned long)sinceID startingAtPage:(int)pageNum count:(int)count; // statuses/user_timeline & statuses/user_timeline/user
+- (NSString *)getUserTimelineFor:(NSString *)username sinceID:(unsigned long)sinceID withMaximumID:(unsigned long)maxID startingAtPage:(int)pageNum count:(int)count; // statuses/user_timeline & statuses/user_timeline/user
+
+- (NSString *)getUpdate:(unsigned long)updateID; // statuses/show
+- (NSString *)sendUpdate:(NSString *)status; // statuses/update
+- (NSString *)sendUpdate:(NSString *)status inReplyTo:(unsigned long)updateID; // statuses/update
+
+- (NSString *)getRepliesStartingAtPage:(int)pageNum; // statuses/mentions
+- (NSString *)getRepliesSinceID:(unsigned long)sinceID startingAtPage:(int)pageNum count:(int)count; // statuses/mentions
+- (NSString *)getRepliesSinceID:(unsigned long)sinceID withMaximumID:(unsigned long)maxID startingAtPage:(int)pageNum count:(int)count; // statuses/mentions
+
+- (NSString *)deleteUpdate:(unsigned long)updateID; // statuses/destroy
+
+- (NSString *)getFeaturedUsers; // statuses/features (undocumented, returns invalid JSON data)
+
+
+// User methods
+
+- (NSString *)getRecentlyUpdatedFriendsFor:(NSString *)username startingAtPage:(int)pageNum; // statuses/friends & statuses/friends/user
+
+- (NSString *)getFollowersIncludingCurrentStatus:(BOOL)flag; // statuses/followers
+
+- (NSString *)getUserInformationFor:(NSString *)usernameOrID; // users/show
+- (NSString *)getUserInformationForEmail:(NSString *)email; // users/show
+
+
+// Direct Message methods
+
+- (NSString *)getDirectMessagesSinceID:(unsigned long)sinceID startingAtPage:(int)pageNum; // direct_messages
+- (NSString *)getDirectMessagesSinceID:(unsigned long)sinceID withMaximumID:(unsigned long)maxID startingAtPage:(int)pageNum count:(int)count; // direct_messages
+
+- (NSString *)getSentDirectMessagesSinceID:(unsigned long)sinceID startingAtPage:(int)pageNum; // direct_messages/sent
+- (NSString *)getSentDirectMessagesSinceID:(unsigned long)sinceID withMaximumID:(unsigned long)maxID startingAtPage:(int)pageNum count:(int)count; // direct_messages/sent
+
+- (NSString *)sendDirectMessage:(NSString *)message to:(NSString *)username; // direct_messages/new
+- (NSString *)deleteDirectMessage:(unsigned long)updateID;// direct_messages/destroy
+
+
+// Friendship methods
+
+- (NSString *)enableUpdatesFor:(NSString *)username; // friendships/create (follow username)
+- (NSString *)disableUpdatesFor:(NSString *)username; // friendships/destroy (unfollow username)
+- (NSString *)isUser:(NSString *)username1 receivingUpdatesFor:(NSString *)username2; // friendships/exists (test if username1 follows username2)
+
+
 // Account methods
-- (NSString *)checkUserCredentials;
-- (NSString *)endUserSession;
-- (NSString *)enableUpdatesFor:(NSString *)username;          // i.e. follow
-- (NSString *)disableUpdatesFor:(NSString *)username;         // i.e. no longer follow
-- (NSString *)isUser:(NSString *)username1 receivingUpdatesFor:(NSString *)username2;	// i.e. test if username1 follows username2 (not the reverse)
-- (NSString *)enableNotificationsFor:(NSString *)username;
-- (NSString *)disableNotificationsFor:(NSString *)username;
-- (NSString *)getRateLimitStatus;
-- (NSString *)setLocation:(NSString *)location;
-- (NSString *)setNotificationsDeliveryMethod:(NSString *)method;
-- (NSString *)block:(NSString *)username;
-- (NSString *)unblock:(NSString *)username;
-- (NSString *)testService;
-- (NSString *)getDowntimeSchedule;
 
-// Retrieving updates
-- (NSString *)getFollowedTimelineFor:(NSString *)username since:(NSDate *)date startingAtPage:(int)pageNum;
-- (NSString *)getFollowedTimelineFor:(NSString *)username since:(NSDate *)date startingAtPage:(int)pageNum count:(int)count;		// max 200
-- (NSString *)getFollowedTimelineFor:(NSString *)username sinceID:(int)updateID startingAtPage:(int)pageNum count:(int)count;		// max 200
-- (NSString *)getUserTimelineFor:(NSString *)username since:(NSDate *)date count:(int)numUpdates;									// max 200
-- (NSString *)getUserTimelineFor:(NSString *)username since:(NSDate *)date startingAtPage:(int)pageNum count:(int)numUpdates;		// max 200
-- (NSString *)getUserTimelineFor:(NSString *)username sinceID:(int)updateID startingAtPage:(int)pageNum count:(int)numUpdates;		// max 200
-- (NSString *)getUserUpdatesArchiveStartingAtPage:(int)pageNum;																		// 80 per page
-- (NSString *)getPublicTimelineSinceID:(int)updateID;
-- (NSString *)getRepliesStartingAtPage:(int)pageNum;                                          // sent TO this user
-- (NSString *)getFavoriteUpdatesFor:(NSString *)username startingAtPage:(int)pageNum;
-- (NSString *)getUpdate:(int)updateID;
+- (NSString *)checkUserCredentials; // account/verify_credentials
+- (NSString *)endUserSession; // account/end_session
 
-// Retrieving direct messages
-- (NSString *)getDirectMessagesSince:(NSDate *)date startingAtPage:(int)pageNum;              // sent TO this user
-- (NSString *)getDirectMessagesSinceID:(int)updateID startingAtPage:(int)pageNum;             // sent TO this user
-- (NSString *)getSentDirectMessagesSince:(NSDate *)date startingAtPage:(int)pageNum;          // sent BY this user
-- (NSString *)getSentDirectMessagesSinceID:(int)updateID startingAtPage:(int)pageNum;         // sent BY this user
+- (NSString *)setLocation:(NSString *)location; // account/update_location (deprecated, use account/update_profile instead)
 
-// Retrieving user information
-- (NSString *)getUserInformationFor:(NSString *)username;
-- (NSString *)getUserInformationForEmail:(NSString *)email;
-- (NSString *)getRecentlyUpdatedFriendsFor:(NSString *)username startingAtPage:(int)pageNum;
-- (NSString *)getFollowersIncludingCurrentStatus:(BOOL)flag;
-- (NSString *)getFeaturedUsers;
+- (NSString *)setNotificationsDeliveryMethod:(NSString *)method; // account/update_delivery_device
 
-// Sending and editing updates
-- (NSString *)sendUpdate:(NSString *)status;
-- (NSString *)sendUpdate:(NSString *)status inReplyTo:(int)updateID;
-- (NSString *)deleteUpdate:(int)updateID;                 // this user must be the AUTHOR
-- (NSString *)markUpdate:(int)updateID asFavorite:(BOOL)flag;
+// TODO: Add: account/update_profile_colors
+// TODO: Add: account/update_profile_image
+// TODO: Add: account/update_profile_background_image
 
-// Sending and editing direct messages
-- (NSString *)sendDirectMessage:(NSString *)message to:(NSString *)username;
-- (NSString *)deleteDirectMessage:(int)updateID;          // this user must be the RECIPIENT
+- (NSString *)getRateLimitStatus; // account/rate_limit_status
+
+// TODO: Add: account/update_profile
+
+// - (NSString *)getUserUpdatesArchiveStartingAtPage:(int)pageNum; // account/archive (removed, use /statuses/user_timeline instead)
+
+
+// Favorite methods
+
+- (NSString *)getFavoriteUpdatesFor:(NSString *)username startingAtPage:(int)pageNum; // favorites
+
+- (NSString *)markUpdate:(unsigned long)updateID asFavorite:(BOOL)flag; // favorites/create, favorites/destroy
+
+
+// Notification methods
+
+- (NSString *)enableNotificationsFor:(NSString *)username; // notifications/follow
+- (NSString *)disableNotificationsFor:(NSString *)username; // notifications/leave
+
+
+// Block methods
+
+- (NSString *)block:(NSString *)username; // blocks/create
+- (NSString *)unblock:(NSString *)username; // blocks/destroy
+
+
+// Help methods
+
+- (NSString *)testService; // help/test
+
+- (NSString *)getDowntimeSchedule; // help/downtime_schedule (undocumented)
+
+
+#pragma mark Search API methods
+
+// ======================================================================================================
+// Twitter Search API methods
+// See documentation at: http://apiwiki.twitter.com/Twitter-API-Documentation
+// All methods below return a unique connection identifier.
+// ======================================================================================================
+
+#if YAJL_AVAILABLE
+
+// Search method
+
+- (NSString *)getSearchResultsForQuery:(NSString *)query;
+- (NSString *)getSearchResultsForQuery:(NSString *)query sinceID:(unsigned long)sinceID startingAtPage:(int)pageNum count:(int)count; // search
+- (NSString *)getSearchResultsForQuery:(NSString *)query sinceID:(unsigned long)sinceID startingAtPage:(int)pageNum count:(int)count geocode:(NSString *)geocode;
+
+// Trends method
+
+- (NSString *)getCurrentTrends; // current trends
+
+#endif
 
 @end
