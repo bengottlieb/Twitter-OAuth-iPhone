@@ -16,7 +16,7 @@ Ben Gottlieb
 ben@standalone.com
 
 == Major Changes Log ==
-2/24/10					- Added additional PIN checks in case Twitter changes the way they pass the PIN back
+2/24/10					- added additional PIN checks in case Twitter changes the way they pass the PIN back
 					- if all else fails, prompt the user to copy their PIN. The app will grab this and use it
 					- this last part only works on OS 3.x and later, Everything else should work fine on 2.x.
 					- integrated the latest build of MGTwitterEngine
