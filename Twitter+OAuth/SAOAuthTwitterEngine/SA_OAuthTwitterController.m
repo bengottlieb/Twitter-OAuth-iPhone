@@ -175,7 +175,7 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 		_firstLoad = NO;
 	}
 
-	NSString					*authPin = [[_webView stringByEvaluatingJavaScriptFromString: @"document.getElementById('oauth-pin').innerHTML"] stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+	NSString					*authPin = [self locateAuthPinInWebView: webView];
 	
 	[UIView beginAnimations: nil context: nil];
 	_blockerView.alpha = 0.0;
@@ -189,6 +189,13 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 	} else {
 		_webView.alpha = 1.0;
 	}
+}
+
+- (NSString *) locateAuthPinInWebView: (UIWebView *) webView {
+	NSString			*authPin = [[_webView stringByEvaluatingJavaScriptFromString: @"document.getElementById('oauth_pin').innerHTML"] stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+	if (authPin.length == 0) authPin = [[_webView stringByEvaluatingJavaScriptFromString: @"document.getElementById('oauth-pin').innerHTML"] stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+
+	return authPin;
 }
 
 - (void) performInjection {

@@ -49,4 +49,5 @@
 
 - (id) initWithEngine: (SA_OAuthTwitterEngine *) engine andOrientation:(UIInterfaceOrientation)theOrientation;
 - (void) performInjection;
+- (NSString *) locateAuthPinInWebView: (UIWebView *) webView;
 @end
