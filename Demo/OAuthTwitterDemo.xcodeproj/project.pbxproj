@@ -25,7 +25,6 @@
 		B54ED4B41135F10F0095DD71 /* MGTwitterXMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B54ED49D1135F10F0095DD71 /* MGTwitterXMLParser.m */; };
 		B54ED4B61135F10F0095DD71 /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = B54ED4A11135F10F0095DD71 /* NSData+Base64.m */; };
 		B54ED4B71135F10F0095DD71 /* NSString+UUID.m in Sources */ = {isa = PBXBuildFile; fileRef = B54ED4A31135F10F0095DD71 /* NSString+UUID.m */; };
-		B584AF8510A9B0500073EE45 /* jQueryInjectLandscape.txt in Resources */ = {isa = PBXBuildFile; fileRef = B584AF8410A9B0500073EE45 /* jQueryInjectLandscape.txt */; };
 		B5901B8E101A291A00CF32FA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B5901B88101A291A00CF32FA /* main.m */; };
 		B5901B8F101A291A00CF32FA /* OAuthTwitterDemoAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B5901B8B101A291A00CF32FA /* OAuthTwitterDemoAppDelegate.m */; };
 		B5901B90101A291A00CF32FA /* OAuthTwitterDemoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5901B8D101A291A00CF32FA /* OAuthTwitterDemoViewController.m */; };
@@ -34,7 +33,6 @@
 		B5BC1F86101A36F0009820BB /* SA_OAuthTwitterEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = B5BC1F83101A36F0009820BB /* SA_OAuthTwitterEngine.m */; };
 		B5BC1F87101A36F0009820BB /* SA_OAuthTwitterController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5BC1F85101A36F0009820BB /* SA_OAuthTwitterController.m */; };
 		B5BC2313101A63F2009820BB /* libOAuth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B5BC2312101A63F2009820BB /* libOAuth.a */; };
-		B5FA71731031A0E900E12777 /* jQueryInject.txt in Resources */ = {isa = PBXBuildFile; fileRef = B5FA71721031A0E900E12777 /* jQueryInject.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -75,7 +73,6 @@
 		B54ED4A11135F10F0095DD71 /* NSData+Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Base64.m"; sourceTree = "<group>"; };
 		B54ED4A21135F10F0095DD71 /* NSString+UUID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+UUID.h"; sourceTree = "<group>"; };
 		B54ED4A31135F10F0095DD71 /* NSString+UUID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+UUID.m"; sourceTree = "<group>"; };
-		B584AF8410A9B0500073EE45 /* jQueryInjectLandscape.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = jQueryInjectLandscape.txt; sourceTree = "<group>"; };
 		B5901B0B101A280800CF32FA /* NSMutableURLRequest+Parameters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableURLRequest+Parameters.h"; sourceTree = "<group>"; };
 		B5901B0C101A280800CF32FA /* NSString+URLEncoding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+URLEncoding.h"; sourceTree = "<group>"; };
 		B5901B0D101A280800CF32FA /* NSURL+Base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURL+Base.h"; sourceTree = "<group>"; };
@@ -105,7 +102,6 @@
 		B5BC1F84101A36F0009820BB /* SA_OAuthTwitterController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SA_OAuthTwitterController.h; sourceTree = "<group>"; };
 		B5BC1F85101A36F0009820BB /* SA_OAuthTwitterController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SA_OAuthTwitterController.m; sourceTree = "<group>"; };
 		B5BC2312101A63F2009820BB /* libOAuth.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libOAuth.a; path = "../Libraries & Headers/libOAuth.a"; sourceTree = "<group>"; };
-		B5FA71721031A0E900E12777 /* jQueryInject.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = jQueryInject.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -179,8 +175,6 @@
 		B5901B09101A280800CF32FA /* Libraries & Headers */ = {
 			isa = PBXGroup;
 			children = (
-				B5FA71721031A0E900E12777 /* jQueryInject.txt */,
-				B584AF8410A9B0500073EE45 /* jQueryInjectLandscape.txt */,
 				B5901B0A101A280800CF32FA /* OAuthConsumer */,
 			);
 			path = "Libraries & Headers";
@@ -317,8 +311,6 @@
 			files = (
 				B5901B94101A294400CF32FA /* MainWindow.xib in Resources */,
 				B5901B96101A294400CF32FA /* OAuthTwitterDemoViewController.xib in Resources */,
-				B5FA71731031A0E900E12777 /* jQueryInject.txt in Resources */,
-				B584AF8510A9B0500073EE45 /* jQueryInjectLandscape.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

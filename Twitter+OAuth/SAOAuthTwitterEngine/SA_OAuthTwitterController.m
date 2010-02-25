@@ -20,7 +20,6 @@
 static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 
 @interface SA_OAuthTwitterController ()
-@property (nonatomic, readonly) UINavigationBar *navigationBar;
 @property (nonatomic, readonly) UIToolbar *pinCopyPromptBar;
 @property (nonatomic, readwrite) UIInterfaceOrientation orientation;
 
