@@ -13,7 +13,6 @@
 #define kOAuthConsumerKey				@""		//REPLACE ME
 #define kOAuthConsumerSecret			@""		//REPLACE ME
 
-
 @implementation OAuthTwitterDemoViewController
 
 
@@ -45,15 +44,6 @@
 	NSLog(@"Authentication Canceled.");
 }
 
-
-
-
-
-
-
-
-
-
 //=============================================================================================================================
 #pragma mark TwitterEngineDelegate
 - (void) requestSucceeded: (NSString *) requestIdentifier {
@@ -77,8 +67,6 @@
 	_engine = [[SA_OAuthTwitterEngine alloc] initOAuthWithDelegate: self];
 	_engine.consumerKey = kOAuthConsumerKey;
 	_engine.consumerSecret = kOAuthConsumerSecret;
-
-	[_engine requestRequestToken];
 	
 	UIViewController			*controller = [SA_OAuthTwitterController controllerToEnterCredentialsWithTwitterEngine: _engine delegate: self];
 	
