@@ -208,7 +208,7 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 	
 	NSString						*copied = pb.string;
 	
-	if (copied.length < 6 || copied.length > 10 || !copied.oauthtwitter_isNumeric) return;
+	if (copied.length != 7 || !copied.oauthtwitter_isNumeric) return;
 	
 	[self gotPin: copied];
 }
@@ -264,7 +264,7 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
  
  - first we check, using standard DOM-diving, for the pin, looking at both the old and new tags for it.
  - if not found, we try a regex for it. This did not work for me (though it did work in test web pages).
- - if STILL not found, we iterate the entire HTML and look for an all-numeric 'word', between 6 and 10 characters in length
+ - if STILL not found, we iterate the entire HTML and look for an all-numeric 'word', 7 characters in length
 
 Ugly. I apologize for its inelegance. Bleah.
 
@@ -274,9 +274,9 @@ Ugly. I apologize for its inelegance. Bleah.
 	NSString			*js = @"var d = document.getElementById('oauth-pin'); if (d == null) d = document.getElementById('oauth_pin'); if (d) d = d.innerHTML; if (d == null) {var r = new RegExp('\\\\s[0-9]+\\\\s'); d = r.exec(document.body.innerHTML); if (d.length > 0) d = d[0];} d.replace(/^\\s*/, '').replace(/\\s*$/, ''); d;";
 	NSString			*pin = [webView stringByEvaluatingJavaScriptFromString: js];
 	
-	if (pin.length > 0) return pin;
+//	if (pin.length > 0) return pin;
 	
-	NSString			*html = [webView stringByEvaluatingJavaScriptFromString: @"document.body.innerHTML"];
+	NSString			*html = [webView stringByEvaluatingJavaScriptFromString: @"document.body.innerText"];
 	
 	if (html.length == 0) return nil;
 	
@@ -285,7 +285,7 @@ Ugly. I apologize for its inelegance. Bleah.
 	
 	for (int i = 0; i < length; i++) {
 		if (rawHTML[i] < '0' || rawHTML[i] > '9') {
-			if (chunkLength > 5 && chunkLength < 11) {
+			if (chunkLength == 7) {
 				char				*buffer = (char *) malloc(chunkLength + 1);
 				
 				memmove(buffer, &rawHTML[i - chunkLength], chunkLength);
