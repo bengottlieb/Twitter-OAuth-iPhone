@@ -271,33 +271,21 @@ Ugly. I apologize for its inelegance. Bleah.
 *********************************************************************************************************/
 
 - (NSString *) locateAuthPinInWebView: (UIWebView *) webView {
-	NSString			*js = @"var d = document.getElementById('oauth-pin'); if (d == null) d = document.getElementById('oauth_pin'); if (d) d = d.innerHTML; if (d == null) {var r = new RegExp('\\\\s[0-9]+\\\\s'); d = r.exec(document.body.innerHTML); if (d.length > 0) d = d[0];} d.replace(/^\\s*/, '').replace(/\\s*$/, ''); d;";
-	NSString			*pin = [webView stringByEvaluatingJavaScriptFromString: js];
+	// Look for either 'oauth-pin' or 'oauth_pin' in the raw HTML
+	NSString			*js = @"var d = document.getElementById('oauth-pin'); if (d == null) d = document.getElementById('oauth_pin'); if (d) d = d.innerHTML; d;";
+	NSString			*pin = [[webView stringByEvaluatingJavaScriptFromString: js] stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
 	
-//	if (pin.length > 0) return pin;
-	
-	NSString			*html = [webView stringByEvaluatingJavaScriptFromString: @"document.body.innerText"];
-	
-	if (html.length == 0) return nil;
-	
-	const char			*rawHTML = (const char *) [html UTF8String];
-	int					length = strlen(rawHTML), chunkLength = 0;
-	
-	for (int i = 0; i < length; i++) {
-		if (rawHTML[i] < '0' || rawHTML[i] > '9') {
-			if (chunkLength == 7) {
-				char				*buffer = (char *) malloc(chunkLength + 1);
-				
-				memmove(buffer, &rawHTML[i - chunkLength], chunkLength);
-				buffer[chunkLength] = 0;
-				
-				pin = [NSString stringWithUTF8String: buffer];
-				free(buffer);
-				return pin;
-			}
-			chunkLength = 0;
-		} else
-			chunkLength++;
+	if (pin.length == 7) {
+		return pin;
+	} else {
+		// New version of Twitter PIN page
+		js = @"var d = document.getElementById('oauth-pin'); if (d == null) d = document.getElementById('oauth_pin'); " \
+		"if (d) { var d2 = d.getElementsByTagName('code'); if (d2.length > 0) d2[0].innerHTML; }";
+		pin = [[webView stringByEvaluatingJavaScriptFromString: js] stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+		
+		if (pin.length == 7) {
+			return pin;
+		}
 	}
 	
 	return nil;
