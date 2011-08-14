@@ -54,7 +54,7 @@
 
 -(NSString *)urlEncode:(NSString*)stringThatNeedsEncoding
 {
-	NSString *result = (NSString*)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (CFStringRef)stringThatNeedsEncoding, NULL, CFSTR(";/?:@&=$+{}<>, "), kCFStringEncodingUTF8);
+	NSString *result = (NSString*)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (CFStringRef)stringThatNeedsEncoding, NULL, CFSTR("!*'\"();:@&=+$,/?#[]%<>{} "), kCFStringEncodingUTF8);
 	return [result autorelease];
 }
 
