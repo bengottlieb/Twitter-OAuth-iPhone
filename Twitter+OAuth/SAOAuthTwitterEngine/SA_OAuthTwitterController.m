@@ -27,6 +27,8 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 //- (void) performInjection;
 - (NSString *) locateAuthPinInWebView: (UIWebView *) webView;
 
+- (BOOL) shouldAddNavBar;
+
 - (void) showPinCopyPrompt;
 - (void) gotPin: (NSString *) pin;
 @end
@@ -43,7 +45,7 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 
 @implementation NSString (TwitterOAuth)
 - (BOOL) oauthtwitter_isNumeric {
-	const char				*raw = (const char *) [self UTF8String];
+	const char *raw = (const char *) [self UTF8String];
 	
 	for (int i = 0; i < strlen(raw); i++) {
 		if (raw[i] < '0' || raw[i] > '9') return NO;
@@ -58,7 +60,7 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 
 
 - (void) dealloc {
-	[_backgroundView release];
+	[_backgroundView release]; _backgroundView = nil;
 	
 	[[NSNotificationCenter defaultCenter] removeObserver: self];
 	_webView.delegate = nil;
@@ -96,10 +98,7 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 		self.orientation = theOrientation;
 		_firstLoad = YES;
 		
-		if (UIInterfaceOrientationIsLandscape( self.orientation ) )
-			_webView = [[UIWebView alloc] initWithFrame: CGRectMake(0, 32, 480, 288)];
-		else
-			_webView = [[UIWebView alloc] initWithFrame: CGRectMake(0, 44, 320, 416)];
+        _webView = [[UIWebView alloc] init];
 		
 		_webView.alpha = 0.0;
 		_webView.delegate = self;
@@ -143,13 +142,17 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 	_backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:kGGTwitterLoadingBackgroundImage]];
 	if ( UIInterfaceOrientationIsLandscape( self.orientation ) ) {
 		self.view = [[[UIView alloc] initWithFrame: CGRectMake(0, 0, 480, 288)] autorelease];	
-		_backgroundView.frame =  CGRectMake(0, 44, 480, 288);
+		_backgroundView.frame =  CGRectMake(0, [self shouldAddNavBar]?44:0, 480, 288);
 		
-		_navBar = [[[UINavigationBar alloc] initWithFrame: CGRectMake(0, 0, 480, 32)] autorelease];
+        if ([self shouldAddNavBar]) {
+            _navBar = [[[UINavigationBar alloc] initWithFrame: CGRectMake(0, 0, 480, 32)] autorelease];
+        }
 	} else {
 		self.view = [[[UIView alloc] initWithFrame: CGRectMake(0, 0, 320, 416)] autorelease];	
-		_backgroundView.frame =  CGRectMake(0, 44, 320, 416);
-		_navBar = [[[UINavigationBar alloc] initWithFrame: CGRectMake(0, 0, 320, 44)] autorelease];
+		_backgroundView.frame =  CGRectMake(0, [self shouldAddNavBar]?44:0, 320, 416);
+        if ([self shouldAddNavBar]) {
+            _navBar = [[[UINavigationBar alloc] initWithFrame: CGRectMake(0, 0, 320, 44)] autorelease];
+        }
 	}
 	_navBar.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;
 	_backgroundView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -157,9 +160,15 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 
 	if (!UIInterfaceOrientationIsLandscape( self.orientation)) [self.view addSubview:_backgroundView];
 	
+    if (UIInterfaceOrientationIsLandscape( self.orientation ) )
+        [_webView setFrame:CGRectMake(0, [self shouldAddNavBar]?32:0, 480, 288)];
+    else
+        [_webView setFrame:CGRectMake(0, [self shouldAddNavBar]?44:0, 320, 416)];
+    
 	[self.view addSubview: _webView];
-	[self.view addSubview: _navBar];
-	
+    if ([self shouldAddNavBar]) { // Check if we're not loaded as component in an existing navigation structure.
+        [self.view addSubview: _navBar];
+    }
 	_blockerView = [[[UIView alloc] initWithFrame: CGRectMake(0, 0, 200, 60)] autorelease];
 	_blockerView.backgroundColor = [UIColor colorWithWhite: 0.0 alpha: 0.8];
 	_blockerView.center = CGPointMake(self.view.bounds.size.width / 2, self.view.bounds.size.height / 2);
@@ -167,7 +176,7 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 	_blockerView.clipsToBounds = YES;
 	if ([_blockerView.layer respondsToSelector: @selector(setCornerRadius:)]) [(id) _blockerView.layer setCornerRadius: 10];
 	
-	UILabel								*label = [[[UILabel alloc] initWithFrame: CGRectMake(0, 5, _blockerView.bounds.size.width, 15)] autorelease];
+	UILabel	*label = [[[UILabel alloc] initWithFrame: CGRectMake(0, 5, _blockerView.bounds.size.width, 15)] autorelease];
 	label.text = NSLocalizedString(@"Please Wait…", nil);
 	label.backgroundColor = [UIColor clearColor];
 	label.textColor = [UIColor whiteColor];
@@ -307,6 +316,11 @@ Ugly. I apologize for its inelegance. Bleah.
 	}
 	
 	return _pinCopyPromptBar;
+}
+
+- (BOOL) shouldAddNavBar {
+    // If we're inside a navigationController structure, we shouldn't add our own navbar.
+    return (self.navigationController == nil);
 }
 
 
