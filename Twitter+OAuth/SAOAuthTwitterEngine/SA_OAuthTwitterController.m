@@ -27,7 +27,8 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 //- (void) performInjection;
 - (NSString *) locateAuthPinInWebView: (UIWebView *) webView;
 
-- (BOOL) shouldAddNavBar;
+- (BOOL) isModal;
+- (void) closeWithDelay:(NSTimeInterval)delay;
 
 - (void) showPinCopyPrompt;
 - (void) gotPin: (NSString *) pin;
@@ -114,11 +115,19 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 	return self;
 }
 
+- (void) closeWithDelay:(NSTimeInterval)delay {
+    if ([self isModal]) {
+        [self performSelector: @selector(dismissModalViewControllerAnimated:) withObject: (id) kCFBooleanTrue afterDelay: delay];
+    } else {
+        [self.navigationController performSelector: @selector(popViewControllerAnimated:) withObject: (id) kCFBooleanTrue afterDelay:delay];
+    }
+}
+
 //=============================================================================================================================
 #pragma mark Actions
 - (void) denied {
 	if ([_delegate respondsToSelector: @selector(OAuthTwitterControllerFailed:)]) [_delegate OAuthTwitterControllerFailed: self];
-	[self performSelector: @selector(dismissModalViewControllerAnimated:) withObject: (id) kCFBooleanTrue afterDelay: 1.0];
+    [self closeWithDelay:1.0];
 }
 
 - (void) gotPin: (NSString *) pin {
@@ -126,31 +135,33 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 	[_engine requestAccessToken];
 	
 	if ([_delegate respondsToSelector: @selector(OAuthTwitterController:authenticatedWithUsername:)]) [_delegate OAuthTwitterController: self authenticatedWithUsername: _engine.username];
-	[self performSelector: @selector(dismissModalViewControllerAnimated:) withObject: (id) kCFBooleanTrue afterDelay: 1.0];
+	[self closeWithDelay:1.0];
 }
 
 - (void) cancel: (id) sender {
 	if ([_delegate respondsToSelector: @selector(OAuthTwitterControllerCanceled:)]) [_delegate OAuthTwitterControllerCanceled: self];
-	[self performSelector: @selector(dismissModalViewControllerAnimated:) withObject: (id) kCFBooleanTrue afterDelay: 0.0];
+	[self closeWithDelay:0.0];
 }
 
 //=============================================================================================================================
 #pragma mark View Controller Stuff
 - (void) loadView {
 	[super loadView];
+    
+    BOOL isModal = [self isModal];
 
 	_backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:kGGTwitterLoadingBackgroundImage]];
 	if ( UIInterfaceOrientationIsLandscape( self.orientation ) ) {
 		self.view = [[[UIView alloc] initWithFrame: CGRectMake(0, 0, 480, 288)] autorelease];	
-		_backgroundView.frame =  CGRectMake(0, [self shouldAddNavBar]?44:0, 480, 288);
+		_backgroundView.frame =  CGRectMake(0, isModal?44:0, 480, 288);
 		
-        if ([self shouldAddNavBar]) {
+        if ([self isModal]) {
             _navBar = [[[UINavigationBar alloc] initWithFrame: CGRectMake(0, 0, 480, 32)] autorelease];
         }
 	} else {
 		self.view = [[[UIView alloc] initWithFrame: CGRectMake(0, 0, 320, 416)] autorelease];	
-		_backgroundView.frame =  CGRectMake(0, [self shouldAddNavBar]?44:0, 320, 416);
-        if ([self shouldAddNavBar]) {
+		_backgroundView.frame =  CGRectMake(0, isModal?44:0, 320, 416);
+        if (isModal) {
             _navBar = [[[UINavigationBar alloc] initWithFrame: CGRectMake(0, 0, 320, 44)] autorelease];
         }
 	}
@@ -161,12 +172,12 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 	if (!UIInterfaceOrientationIsLandscape( self.orientation)) [self.view addSubview:_backgroundView];
 	
     if (UIInterfaceOrientationIsLandscape( self.orientation ) )
-        [_webView setFrame:CGRectMake(0, [self shouldAddNavBar]?32:0, 480, 288)];
+        [_webView setFrame:CGRectMake(0, isModal?32:0, 480, 288)];
     else
-        [_webView setFrame:CGRectMake(0, [self shouldAddNavBar]?44:0, 320, 416)];
+        [_webView setFrame:CGRectMake(0, isModal?44:0, 320, 416)];
     
 	[self.view addSubview: _webView];
-    if ([self shouldAddNavBar]) { // Check if we're not loaded as component in an existing navigation structure.
+    if (isModal) { // Check if we're not loaded as component in an existing navigation structure.
         [self.view addSubview: _navBar];
     }
 	_blockerView = [[[UIView alloc] initWithFrame: CGRectMake(0, 0, 200, 60)] autorelease];
@@ -318,11 +329,15 @@ Ugly. I apologize for its inelegance. Bleah.
 	return _pinCopyPromptBar;
 }
 
-- (BOOL) shouldAddNavBar {
-    // If we're inside a navigationController structure, we shouldn't add our own navbar.
-    return (self.navigationController == nil);
+- (BOOL)isModal { 
+    if ([self navigationController] == nil) {
+        return YES;
+    } else {
+        NSArray *viewControllers = [[self navigationController] viewControllers];
+        UIViewController *rootViewController = [viewControllers objectAtIndex:0];    
+        return rootViewController == self;
+    }
 }
-
 
 
 //removed since Twitter changed the page format
