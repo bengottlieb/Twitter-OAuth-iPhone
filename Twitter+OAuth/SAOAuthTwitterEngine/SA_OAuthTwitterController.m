@@ -341,7 +341,7 @@ Ugly. I apologize for its inelegance. Bleah.
 	NSData				*data = [request HTTPBody];
 	char				*raw = data ? (char *) [data bytes] : "";
 	
-	if (raw && strstr(raw, "cancel=")) {
+	if (raw && (strstr(raw, "cancel=") || strstr(raw, "deny="))) {
 		[self denied];
 		return NO;
 	}
