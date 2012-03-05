@@ -1041,23 +1041,23 @@
 }
 
 
-- (NSString *)sendRetweet:(unsigned long)updateID
+- (NSString *)sendRetweet:(NSString *)updateID
 
 {
     if (updateID == 0){
-        
         return nil;
     }
+
+    NSString *path = [NSString stringWithFormat:@"statuses/retweet/%@.%@",updateID, API_FORMAT];
     
-    NSString *path = [NSString stringWithFormat:@"statuses/retweet/%u.%@", updateID, API_FORMAT];
     
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:0];
     [params setObject:[NSString stringWithFormat:@"%@", updateID] forKey:@"id"];
     NSString *body = [self _queryStringWithBase:nil parameters:params prefixed:NO];
-    
+
     
     return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path 
-                        queryParameters:params body:body 
+                        queryParameters:params body:body
                             requestType:MGTwitterUpdateSendRequest
                            responseType:MGTwitterStatus];
 }
