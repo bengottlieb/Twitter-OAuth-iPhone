@@ -107,6 +107,7 @@
 
 - (NSString *)getFeaturedUsers; // statuses/features (undocumented, returns invalid JSON data)
 
+- (NSString *)sendUpdate:(NSString *)status uploadPhoto:(UIImage *)image latitude:(double)aLatitude longitude:(double)aLongitude;
 
 // User methods
 

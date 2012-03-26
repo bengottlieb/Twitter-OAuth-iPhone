@@ -343,6 +343,105 @@
 }
 
 
+- (NSString *)_sendUploadRequestWithMethod:(NSString *)method 
+                                path:(NSString *)path 
+                                body:(NSString *)body 
+                         requestType:(MGTwitterRequestType)requestType 
+                        responseType:(MGTwitterResponseType)responseType
+{
+    NSString *fullPath = path;
+    
+	// --------------------------------------------------------------------------------
+	// modificaiton from the base clase
+	// the base class appends parameters here
+	// --------------------------------------------------------------------------------
+	//    if (params) {
+	//        fullPath = [self _queryStringWithBase:fullPath parameters:params prefixed:YES];
+	//    }
+	// --------------------------------------------------------------------------------
+    
+    NSString *urlString = [NSString stringWithFormat:@"%@://%@/%@", 
+                           (_secureConnection) ? @"https" : @"http",
+                           @"upload.twitter.com/1", fullPath];
+    NSURL *finalURL = [NSURL URLWithString:urlString];
+    if (!finalURL) {
+        return nil;
+    }
+	
+	// --------------------------------------------------------------------------------
+	// modificaiton from the base clase
+	// the base class creates a regular url request
+	// we're going to create an oauth url request
+	// --------------------------------------------------------------------------------
+	//    NSMutableURLRequest *theRequest = [NSMutableURLRequest requestWithURL:finalURL 
+	//                                                              cachePolicy:NSURLRequestReloadIgnoringCacheData 
+	//                                                          timeoutInterval:URL_REQUEST_TIMEOUT];
+	// --------------------------------------------------------------------------------
+	
+	OAMutableURLRequest *theRequest = [[[OAMutableURLRequest alloc] initWithURL:finalURL
+																	   consumer:self.consumer 
+																		  token:_accessToken 
+																		  realm: nil
+															  signatureProvider:nil] autorelease];
+    if (method) {
+        [theRequest setHTTPMethod:method];
+    }
+    [theRequest setHTTPShouldHandleCookies:NO];
+    
+    // Set headers for client information, for tracking purposes at Twitter.
+    [theRequest setValue:_clientName    forHTTPHeaderField:@"X-Twitter-Client"];
+    [theRequest setValue:_clientVersion forHTTPHeaderField:@"X-Twitter-Client-Version"];
+    [theRequest setValue:_clientURL     forHTTPHeaderField:@"X-Twitter-Client-URL"];
+
+    NSString *boundary = @"----------------------------991990ee82f7";
+    NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary];
+    [theRequest setValue:contentType forHTTPHeaderField:@"content-type"];
+    
+    // --------------------------------------------------------------------------------
+	// modificaiton from the base clase
+	// our version "prepares" the oauth url request
+	// --------------------------------------------------------------------------------
+	[theRequest prepare];
+    
+    // Set the request body if this is a POST request.
+    BOOL isPOST = (method && [method isEqualToString:@"POST"]);
+    if (isPOST) {
+        // Set request body, if specified (hopefully so), with 'source' parameter if appropriate.
+        NSString *finalBody = @"";
+		if (body) {
+			finalBody = [finalBody stringByAppendingString:body];
+		}
+        if (_clientSourceToken) {
+            finalBody = [finalBody stringByAppendingString:[NSString stringWithFormat:@"%@source=%@", 
+                                                            (body) ? @"&" : @"?" , 
+                                                            _clientSourceToken]];
+        }
+        
+        if (finalBody) {
+            [theRequest setHTTPBody:[finalBody dataUsingEncoding:NSUTF8StringEncoding]];
+        }
+    }
+    
+    
+    // Create a connection using this request, with the default timeout and caching policy, 
+    // and appropriate Twitter request and response types for parsing and error reporting.
+    MGTwitterHTTPURLConnection *connection;
+    connection = [[MGTwitterHTTPURLConnection alloc] initWithRequest:theRequest 
+                                                            delegate:self 
+                                                         requestType:requestType 
+                                                        responseType:responseType];
+    
+    if (!connection) {
+        return nil;
+    } else {
+        [_connections setObject:connection forKey:[connection identifier]];
+        [connection release];
+    }
+    
+    return [connection identifier];
+}
+
+
 - (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 {
 	
