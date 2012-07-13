@@ -42,21 +42,11 @@
 @synthesize pin = _pin, requestTokenURL = _requestTokenURL, accessTokenURL = _accessTokenURL, authorizeURL = _authorizeURL;
 @synthesize consumerSecret = _consumerSecret, consumerKey = _consumerKey;
 
-- (void) dealloc {
-	self.pin = nil;
-	self.authorizeURL = nil;
-	self.requestTokenURL = nil;
-	self.accessTokenURL = nil;
-	
-	[_accessToken release];
-	[_requestToken release];
-	[_consumer release];
-	[super dealloc];
-}
+
 
 
 + (SA_OAuthTwitterEngine *) OAuthTwitterEngineWithDelegate: (NSObject *) delegate {
-    return [[[SA_OAuthTwitterEngine alloc] initOAuthWithDelegate: delegate] autorelease];
+    return [[SA_OAuthTwitterEngine alloc] initOAuthWithDelegate: delegate] ;
 }
 
 
@@ -89,13 +79,13 @@
 	NSString					*accessTokenString = [_delegate respondsToSelector: @selector(cachedTwitterOAuthDataForUsername:)] ? [(id) _delegate cachedTwitterOAuthDataForUsername: self.username] : @"";
 
 	if (accessTokenString.length) {				
-		[_accessToken release];
+	
 		_accessToken = [[OAToken alloc] initWithHTTPResponseBody: accessTokenString];
 		[self setUsername: [self extractUsernameFromHTTPBody: accessTokenString] password: nil];
 		if (_accessToken.key && _accessToken.secret) return YES;
 	}
 	
-	[_accessToken release];										// no access token found.  create a new empty one
+										// no access token found.  create a new empty one
 	_accessToken = [[OAToken alloc] initWithKey: nil secret: nil];
 	return NO;
 }
@@ -105,9 +95,9 @@
 - (NSURLRequest *) authorizeURLRequest {
 	if (!_requestToken.key && _requestToken.secret) return nil;	// we need a valid request token to generate the URL
 
-	OAMutableURLRequest			*request = [[[OAMutableURLRequest alloc] initWithURL: self.authorizeURL consumer: nil token: _requestToken realm: nil signatureProvider: nil] autorelease];	
+	OAMutableURLRequest			*request = [[OAMutableURLRequest alloc] initWithURL: self.authorizeURL consumer: nil token: _requestToken realm: nil signatureProvider: nil] ;	
 
-	[request setParameters: [NSArray arrayWithObject: [[[OARequestParameter alloc] initWithName: @"oauth_token" value: _requestToken.key] autorelease]]];	
+	[request setParameters: [NSArray arrayWithObject: [[OARequestParameter alloc] initWithName: @"oauth_token" value: _requestToken.key] ]];	
 	return request;
 }
 
@@ -125,18 +115,18 @@
 
 - (void) clearAccessToken {
 	if ([_delegate respondsToSelector: @selector(storeCachedTwitterOAuthData:forUsername:)]) [(id) _delegate storeCachedTwitterOAuthData: @"" forUsername: self.username];
-	[_accessToken release];
+	
 	_accessToken = nil;
-	[_consumer release];
+	
 	_consumer = nil;
 	self.pin = nil;
-	[_requestToken release];
+	
 	_requestToken = nil;
 }
 
 - (void) setPin: (NSString *) pin {
-	[_pin autorelease];
-	_pin = [pin retain];
+	
+	_pin = pin;
 	
 	_accessToken.pin = pin;
 	_requestToken.pin = pin;
@@ -145,13 +135,13 @@
 //=============================================================================================================================
 #pragma mark Private OAuth methods
 - (void) requestURL: (NSURL *) url token: (OAToken *) token onSuccess: (SEL) success onFail: (SEL) fail {
-    OAMutableURLRequest				*request = [[[OAMutableURLRequest alloc] initWithURL: url consumer: self.consumer token:token realm:nil signatureProvider: nil] autorelease];
+    OAMutableURLRequest				*request = [[OAMutableURLRequest alloc] initWithURL: url consumer: self.consumer token:token realm:nil signatureProvider: nil] ;
 	if (!request) return;
 	
 	if (self.pin.length) token.pin = self.pin;
     [request setHTTPMethod: @"POST"];
 	
-    OADataFetcher				*fetcher = [[[OADataFetcher alloc] init] autorelease];	
+    OADataFetcher				*fetcher = [[OADataFetcher alloc] init] ;	
     [fetcher fetchDataWithRequest: request delegate: self didFinishSelector: success didFailSelector: fail];
 }
 
@@ -174,10 +164,9 @@
 - (void) setRequestToken: (OAServiceTicket *) ticket withData: (NSData *) data {
 	if (!ticket.didSucceed || !data) return;
 	
-	NSString *dataString = [[[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding] autorelease];
+	NSString *dataString = [[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding] ;
 	if (!dataString) return;
 	
-	[_requestToken release];
 	_requestToken = [[OAToken alloc] initWithHTTPResponseBody:dataString];
 	
 	if (self.pin.length) _requestToken.pin = self.pin;
@@ -192,7 +181,7 @@
 - (void) setAccessToken: (OAServiceTicket *) ticket withData: (NSData *) data {
 	if (!ticket.didSucceed || !data) return;
 	
-	NSString *dataString = [[[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding] autorelease];
+	NSString *dataString = [[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding] ;
 	if (!dataString) return;
 
 	if (self.pin.length && [dataString rangeOfString: @"oauth_verifier"].location == NSNotFound) dataString = [dataString stringByAppendingFormat: @"&oauth_verifier=%@", self.pin];
@@ -204,7 +193,6 @@
 		if ([_delegate respondsToSelector: @selector(storeCachedTwitterOAuthData:forUsername:)]) [(id) _delegate storeCachedTwitterOAuthData: dataString forUsername: username];
 	}
 	
-	[_accessToken release];
 	_accessToken = [[OAToken alloc] initWithHTTPResponseBody:dataString];
 }
 
@@ -284,11 +272,11 @@
 	//                                                          timeoutInterval:URL_REQUEST_TIMEOUT];
 	// --------------------------------------------------------------------------------
 	
-	OAMutableURLRequest *theRequest = [[[OAMutableURLRequest alloc] initWithURL:finalURL
+	OAMutableURLRequest *theRequest = [[OAMutableURLRequest alloc] initWithURL:finalURL
 																	   consumer:self.consumer 
 																		  token:_accessToken 
 																		  realm: nil
-															  signatureProvider:nil] autorelease];
+															  signatureProvider:nil] ;
     if (method) {
         [theRequest setHTTPMethod:method];
     }
@@ -336,7 +324,7 @@
         return nil;
     } else {
         [_connections setObject:connection forKey:[connection identifier]];
-        [connection release];
+        
     }
     
     return [connection identifier];
