@@ -91,20 +91,20 @@
 
 + (MGTwitterEngine *)twitterEngineWithDelegate:(NSObject *)theDelegate
 {
-    return [[[MGTwitterEngine alloc] initWithDelegate:theDelegate] autorelease];
+    return [[MGTwitterEngine alloc] initWithDelegate:theDelegate] ;
 }
 
 
-- (MGTwitterEngine *)initWithDelegate:(NSObject<MGTwitterEngineDelegate>*)newDelegate
+- (MGTwitterEngine *)initWithDelegate:(NSObject *)newDelegate
 {
     if (self = [super init]) {
         _delegate = newDelegate; // deliberately weak reference
         _connections = [[NSMutableDictionary alloc] initWithCapacity:0];
-        _clientName = [DEFAULT_CLIENT_NAME retain];
-        _clientVersion = [DEFAULT_CLIENT_VERSION retain];
-        _clientURL = [DEFAULT_CLIENT_URL retain];
-		_clientSourceToken = [DEFAULT_CLIENT_TOKEN retain];
-		_APIDomain = [TWITTER_DOMAIN retain];
+        _clientName = DEFAULT_CLIENT_NAME;
+        _clientVersion = DEFAULT_CLIENT_VERSION;
+        _clientURL = DEFAULT_CLIENT_URL;
+		_clientSourceToken = DEFAULT_CLIENT_TOKEN;
+		_APIDomain = TWITTER_DOMAIN;
 #if YAJL_AVAILABLE
 		_searchDomain = [TWITTER_SEARCH_DOMAIN retain];
 #endif
@@ -120,26 +120,7 @@
 }
 
 
-- (void)dealloc
-{
-    _delegate = nil;
-    
-    [[_connections allValues] makeObjectsPerformSelector:@selector(cancel)];
-    [_connections release];
-    
-    [_username release];
-    [_password release];
-    [_clientName release];
-    [_clientVersion release];
-    [_clientURL release];
-    [_clientSourceToken release];
-	[_APIDomain release];
-#if YAJL_AVAILABLE
-	[_searchDomain release];
-#endif
-    
-    [super dealloc];
-}
+
 
 
 #pragma mark Configuration and Accessors
@@ -162,23 +143,23 @@
 
 - (NSString *)username
 {
-    return [[_username retain] autorelease];
+    return _username;
 }
 
 
 - (NSString *)password
 {
-    return [[_password retain] autorelease];
+    return _password;
 }
 
 
 - (void)setUsername:(NSString *)newUsername password:(NSString *)newPassword
 {
     // Set new credentials.
-    [_username release];
-    _username = [newUsername retain];
-    [_password release];
-    _password = [newPassword retain];
+   
+    _username = newUsername;
+   
+    _password = newPassword;
     
 	if ([self clearsCookies]) {
 		// Remove all cookies for twitter, to ensure next connection uses new credentials.
@@ -199,54 +180,54 @@
 
 - (NSString *)clientName
 {
-    return [[_clientName retain] autorelease];
+    return _clientName;
 }
 
 
 - (NSString *)clientVersion
 {
-    return [[_clientVersion retain] autorelease];
+    return _clientVersion;
 }
 
 
 - (NSString *)clientURL
 {
-    return [[_clientURL retain] autorelease];
+    return _clientURL;
 }
 
 
 - (NSString *)clientSourceToken
 {
-    return [[_clientSourceToken retain] autorelease];
+    return _clientSourceToken;
 }
 
 
 - (void)setClientName:(NSString *)name version:(NSString *)version URL:(NSString *)url token:(NSString *)token;
 {
-    [_clientName release];
-    _clientName = [name retain];
-    [_clientVersion release];
-    _clientVersion = [version retain];
-    [_clientURL release];
-    _clientURL = [url retain];
-    [_clientSourceToken release];
-    _clientSourceToken = [token retain];
+  
+    _clientName = name;
+  
+    _clientVersion = version;
+    
+    _clientURL = url;
+    
+    _clientSourceToken = token;
 }
 
 
 - (NSString *)APIDomain
 {
-	return [[_APIDomain retain] autorelease];
+	return _APIDomain;
 }
 
 
 - (void)setAPIDomain:(NSString *)domain
 {
-	[_APIDomain release];
+	
 	if (!domain || [domain length] == 0) {
-		_APIDomain = [TWITTER_DOMAIN retain];
+		_APIDomain = TWITTER_DOMAIN;
 	} else {
-		_APIDomain = [domain retain];
+		_APIDomain = domain;
 	}
 }
 
@@ -350,7 +331,7 @@
 {
     // Returns a formatter for dates in HTTP format (i.e. RFC 822, updated by RFC 1123).
     // e.g. "Sun, 06 Nov 1994 08:49:37 GMT"
-	NSDateFormatter *dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
+	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init] ;
 	//[dateFormatter setDateFormat:@"%a, %d %b %Y %H:%M:%S GMT"]; // won't work with -init, which uses new (unicode) format behaviour.
 	[dateFormatter setFormatterBehavior:NSDateFormatterBehavior10_4];
 	[dateFormatter setDateFormat:@"EEE, dd MMM yyyy HH:mm:ss GMT"];
@@ -402,12 +383,12 @@
 
 - (NSString *)_encodeString:(NSString *)string
 {
-    NSString *result = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, 
-                                                                 (CFStringRef)string, 
+    NSString *result = (__bridge NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, 
+                                                                 (__bridge CFStringRef)string, 
                                                                  NULL, 
                                                                  (CFStringRef)@";/?:@&=$+{}<>,",
                                                                  kCFStringEncodingUTF8);
-    return [result autorelease];
+    return result;
 }
 
 
@@ -438,7 +419,7 @@
         return nil;
     } else {
         [_connections setObject:connection forKey:[connection identifier]];
-        [connection release];
+        
     }
     
     return [connection identifier];
@@ -578,7 +559,7 @@
         return nil;
     } else {
         [_connections setObject:connection forKey:[connection identifier]];
-        [connection release];
+        
     }
     
     return [connection identifier];
@@ -639,8 +620,8 @@
 #else
 - (void)_parseDataForConnection:(MGTwitterHTTPURLConnection *)connection
 {
-    NSString *identifier = [[[connection identifier] copy] autorelease];
-    NSData *xmlData = [[[connection data] copy] autorelease];
+    NSString *identifier = [[connection identifier] copy] ;
+    NSData *xmlData = [[connection data] copy] ;
     MGTwitterRequestType requestType = [connection requestType];
     MGTwitterResponseType responseType = [connection responseType];
     
@@ -887,9 +868,9 @@
         if ([connection responseType] == MGTwitterImage) {
 			// Create image from data.
 #if TARGET_OS_IPHONE
-            UIImage *image = [[[UIImage alloc] initWithData:[connection data]] autorelease];
+            UIImage *image = [[UIImage alloc] initWithData:[connection data]] ;
 #else
-            NSImage *image = [[[NSImage alloc] initWithData:[connection data]] autorelease];
+            NSImage *image = [[NSImage alloc] initWithData:[connection data]] ;
 #endif
             
             // Inform delegate.

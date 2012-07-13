@@ -57,23 +57,11 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 @synthesize engine = _engine, delegate = _delegate, navigationBar = _navBar, orientation = _orientation;
 
 
-- (void) dealloc {
-	[_backgroundView release];
-	
-	[[NSNotificationCenter defaultCenter] removeObserver: self];
-	_webView.delegate = nil;
-	[_webView loadRequest: [NSURLRequest requestWithURL: [NSURL URLWithString: @""]]];
-	[_webView release];
-	
-	self.view = nil;
-	self.engine = nil;
-	[super dealloc];
-}
 
 + (SA_OAuthTwitterController *) controllerToEnterCredentialsWithTwitterEngine: (SA_OAuthTwitterEngine *) engine delegate: (id <SA_OAuthTwitterControllerDelegate>) delegate forOrientation: (UIInterfaceOrientation)theOrientation {
 	if (![self credentialEntryRequiredWithTwitterEngine: engine]) return nil;			//not needed
 	
-	SA_OAuthTwitterController					*controller = [[[SA_OAuthTwitterController alloc] initWithEngine: engine andOrientation: theOrientation] autorelease];
+	SA_OAuthTwitterController					*controller = [[SA_OAuthTwitterController alloc] initWithEngine: engine andOrientation: theOrientation];
 	
 	controller.delegate = delegate;
 	return controller;
@@ -142,14 +130,16 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 
 	_backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:kGGTwitterLoadingBackgroundImage]];
 	if ( UIInterfaceOrientationIsLandscape( self.orientation ) ) {
-		self.view = [[[UIView alloc] initWithFrame: CGRectMake(0, 0, 480, 288)] autorelease];	
+		self.view = [[UIView alloc] initWithFrame: CGRectMake(0, 0, 480, 288)] ;	
 		_backgroundView.frame =  CGRectMake(0, 44, 480, 288);
 		
-		_navBar = [[[UINavigationBar alloc] initWithFrame: CGRectMake(0, 0, 480, 32)] autorelease];
+		_navBar = [[UINavigationBar alloc] initWithFrame: CGRectMake(0, 0, 480, 32)] ;
 	} else {
-		self.view = [[[UIView alloc] initWithFrame: CGRectMake(0, 0, 320, 460)] autorelease];	
+        // self.view is full screen view without statusBar. This implementation
+        // use navbar as subview. So we should use screenSize - statusbar size = 460.
+		self.view = [[UIView alloc] initWithFrame: CGRectMake(0, 0, 320, 460)] ;
 		_backgroundView.frame =  CGRectMake(0, 44, 320, 416);
-		_navBar = [[[UINavigationBar alloc] initWithFrame: CGRectMake(0, 0, 320, 44)] autorelease];
+		_navBar = [[UINavigationBar alloc] initWithFrame: CGRectMake(0, 0, 320, 44)] ;
 	}
 	_navBar.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;
 	_backgroundView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -160,14 +150,14 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 	[self.view addSubview: _webView];
 	[self.view addSubview: _navBar];
 	
-	_blockerView = [[[UIView alloc] initWithFrame: CGRectMake(0, 0, 200, 60)] autorelease];
+	_blockerView = [[UIView alloc] initWithFrame: CGRectMake(0, 0, 200, 60)] ;
 	_blockerView.backgroundColor = [UIColor colorWithWhite: 0.0 alpha: 0.8];
 	_blockerView.center = CGPointMake(self.view.bounds.size.width / 2, self.view.bounds.size.height / 2);
 	_blockerView.alpha = 0.0;
 	_blockerView.clipsToBounds = YES;
 	if ([_blockerView.layer respondsToSelector: @selector(setCornerRadius:)]) [(id) _blockerView.layer setCornerRadius: 10];
 	
-	UILabel								*label = [[[UILabel alloc] initWithFrame: CGRectMake(0, 5, _blockerView.bounds.size.width, 15)] autorelease];
+	UILabel								*label = [[UILabel alloc] initWithFrame: CGRectMake(0, 5, _blockerView.bounds.size.width, 15)] ;
 	label.text = NSLocalizedString(@"Please Wait…", nil);
 	label.backgroundColor = [UIColor clearColor];
 	label.textColor = [UIColor whiteColor];
@@ -175,15 +165,15 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 	label.font = [UIFont boldSystemFontOfSize: 15];
 	[_blockerView addSubview: label];
 	
-	UIActivityIndicatorView				*spinner = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle: UIActivityIndicatorViewStyleWhite] autorelease];
+	UIActivityIndicatorView				*spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle: UIActivityIndicatorViewStyleWhite] ;
 	
 	spinner.center = CGPointMake(_blockerView.bounds.size.width / 2, _blockerView.bounds.size.height / 2 + 10);
 	[_blockerView addSubview: spinner];
 	[self.view addSubview: _blockerView];
 	[spinner startAnimating];
 	
-	UINavigationItem				*navItem = [[[UINavigationItem alloc] initWithTitle: NSLocalizedString(@"Twitter Info", nil)] autorelease];
-	navItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem: UIBarButtonSystemItemCancel target: self action: @selector(cancel:)] autorelease];
+	UINavigationItem				*navItem = [[UINavigationItem alloc] initWithTitle: NSLocalizedString(@"Twitter Info", nil)] ;
+	navItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem: UIBarButtonSystemItemCancel target: self action: @selector(cancel:)] ;
 	
 	[_navBar pushNavigationItem: navItem animated: NO];
 	[self locateAuthPinInWebView: nil];
@@ -271,21 +261,34 @@ Ugly. I apologize for its inelegance. Bleah.
 *********************************************************************************************************/
 
 - (NSString *) locateAuthPinInWebView: (UIWebView *) webView {
-	// Look for either 'oauth-pin' or 'oauth_pin' in the raw HTML
-	NSString			*js = @"var d = document.getElementById('oauth-pin'); if (d == null) d = document.getElementById('oauth_pin'); if (d) d = d.innerHTML; d;";
-	NSString			*pin = [[webView stringByEvaluatingJavaScriptFromString: js] stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+	NSString			*js = @"var d = document.getElementById('oauth-pin'); if (d == null) d = document.getElementById('oauth_pin'); if (d) d = d.innerHTML; if (d == null) {var r = new RegExp('\\\\s[0-9]+\\\\s'); d = r.exec(document.body.innerHTML); if (d.length > 0) d = d[0];} d.replace(/^\\s*/, '').replace(/\\s*$/, ''); d;";
+	NSString			*pin = [webView stringByEvaluatingJavaScriptFromString: js];
 	
-	if (pin.length == 7) {
-		return pin;
-	} else {
-		// New version of Twitter PIN page
-		js = @"var d = document.getElementById('oauth-pin'); if (d == null) d = document.getElementById('oauth_pin'); " \
-		"if (d) { var d2 = d.getElementsByTagName('code'); if (d2.length > 0) d2[0].innerHTML; }";
-		pin = [[webView stringByEvaluatingJavaScriptFromString: js] stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
-		
-		if (pin.length == 7) {
-			return pin;
-		}
+//	if (pin.length > 0) return pin;
+	
+	NSString			*html = [webView stringByEvaluatingJavaScriptFromString: @"document.body.innerText"];
+	
+	if (html.length == 0) 
+        return nil;
+	
+	const char			*rawHTML = (const char *) [html UTF8String];
+	int					length = strlen(rawHTML), chunkLength = 0;
+	
+	for (int i = 0; i < length; i++) {
+		if (rawHTML[i] < '0' || rawHTML[i] > '9') {
+			if (chunkLength == 7) {
+				char				*buffer = (char *) malloc(chunkLength + 1);
+				
+				memmove(buffer, &rawHTML[i - chunkLength], chunkLength);
+				buffer[chunkLength] = 0;
+				
+				pin = [NSString stringWithUTF8String: buffer];
+				free(buffer);
+				return pin;
+			}
+			chunkLength = 0;
+		} else
+			chunkLength++;
 	}
 	
 	return nil;
@@ -295,14 +298,14 @@ Ugly. I apologize for its inelegance. Bleah.
 	if (_pinCopyPromptBar == nil){
 		CGRect					bounds = self.view.bounds;
 		
-		_pinCopyPromptBar = [[[UIToolbar alloc] initWithFrame:CGRectMake(0, 44, bounds.size.width, 44)] autorelease];
+		_pinCopyPromptBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 44, bounds.size.width, 44)] ;
 		_pinCopyPromptBar.barStyle = UIBarStyleBlackTranslucent;
 		_pinCopyPromptBar.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;
 
 		_pinCopyPromptBar.items = [NSArray arrayWithObjects: 
-							  [[[UIBarButtonItem alloc] initWithBarButtonSystemItem: UIBarButtonSystemItemFlexibleSpace target: nil action: nil] autorelease],
-							  [[[UIBarButtonItem alloc] initWithTitle: NSLocalizedString(@"Select and Copy the PIN", @"Select and Copy the PIN") style: UIBarButtonItemStylePlain target: nil action: nil] autorelease], 
-							  [[[UIBarButtonItem alloc] initWithBarButtonSystemItem: UIBarButtonSystemItemFlexibleSpace target: nil action: nil] autorelease], 
+							  [[UIBarButtonItem alloc] initWithBarButtonSystemItem: UIBarButtonSystemItemFlexibleSpace target: nil action: nil] ,
+							  [[UIBarButtonItem alloc] initWithTitle: NSLocalizedString(@"Select and Copy the PIN", @"Select and Copy the PIN") style: UIBarButtonItemStylePlain target: nil action: nil] , 
+							  [[UIBarButtonItem alloc] initWithBarButtonSystemItem: UIBarButtonSystemItemFlexibleSpace target: nil action: nil] , 
 							nil];
 	}
 	
@@ -341,11 +344,11 @@ Ugly. I apologize for its inelegance. Bleah.
 	NSData				*data = [request HTTPBody];
 	char				*raw = data ? (char *) [data bytes] : "";
 	
-	if (raw && (strstr(raw, "cancel=") || strstr(raw, "deny="))) {
+	if (raw && strstr(raw, "cancel=")) {
 		[self denied];
 		return NO;
 	}
-	if (navigationType != UIWebViewNavigationTypeOther) _webView.alpha = 0.1;
+	if (navigationType != UIWebViewNavigationTypeOther) _webView.alpha = 0.0;
 	return YES;
 }
 

@@ -38,7 +38,7 @@
 
 
 @property (nonatomic, readwrite, retain) SA_OAuthTwitterEngine *engine;
-@property (nonatomic, readwrite, assign) id <SA_OAuthTwitterControllerDelegate> delegate;
+@property (nonatomic) id <SA_OAuthTwitterControllerDelegate> delegate;
 @property (nonatomic, readonly) UINavigationBar *navigationBar;
 
 + (SA_OAuthTwitterController *) controllerToEnterCredentialsWithTwitterEngine: (SA_OAuthTwitterEngine *) engine delegate: (id <SA_OAuthTwitterControllerDelegate>) delegate forOrientation:(UIInterfaceOrientation)theOrientation;
