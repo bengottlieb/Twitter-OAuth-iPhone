@@ -52,14 +52,20 @@
 	[super dealloc];
 }
 
+-(NSString *)urlEncode:(NSString*)stringThatNeedsEncoding
+{
+	NSString *result = (NSString*)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (CFStringRef)stringThatNeedsEncoding, NULL, CFSTR("!*'\"();:@&=+$,/?#[]%<>{} "), kCFStringEncodingUTF8);
+	return [result autorelease];
+}
+
 - (NSString *)URLEncodedName 
 {
-	return [self.name stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding];
+	return [self urlEncode:self.name]; //[self.name stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding];
 }
 
 - (NSString *)URLEncodedValue 
 {
-    return [self.value stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding];
+    return [self urlEncode:self.value]; //[self.value stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding];
 }
 
 - (NSString *)URLEncodedNameValuePair 

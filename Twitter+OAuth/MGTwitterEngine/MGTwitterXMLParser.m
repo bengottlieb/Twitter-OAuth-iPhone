@@ -28,7 +28,7 @@ connectionIdentifier:(NSString *)identifier requestType:(MGTwitterRequestType)re
 }
 
 
-- (id)initWithXML:(NSData *)theXML delegate:(NSObject *)theDelegate 
+- (id)initWithXML:(NSData *)theXML delegate:(NSObject <MGTwitterParserDelegate> *)theDelegate 
 connectionIdentifier:(NSString *)theIdentifier requestType:(MGTwitterRequestType)reqType 
      responseType:(MGTwitterResponseType)respType
 {

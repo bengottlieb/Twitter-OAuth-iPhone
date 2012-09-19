@@ -10,15 +10,15 @@
 
 #import "MGTwitterParserDelegate.h"
 
-@interface MGTwitterXMLParser : NSObject {
-    /*__weak*/ NSObject <MGTwitterParserDelegate> *delegate; // weak ref
+@interface MGTwitterXMLParser : NSObject <NSXMLParserDelegate> {
+    __weak NSObject <MGTwitterParserDelegate> *delegate; // weak ref
     NSString *identifier;
     MGTwitterRequestType requestType;
     MGTwitterResponseType responseType;
     NSData *xml;
     NSMutableArray *parsedObjects;
     NSXMLParser *parser;
-    /*__weak*/ NSMutableDictionary *currentNode;
+    __weak NSMutableDictionary *currentNode;
     NSString *lastOpenedElement;
 }
 
@@ -28,11 +28,12 @@ connectionIdentifier:(NSString *)identifier requestType:(MGTwitterRequestType)re
 - (id)initWithXML:(NSData *)theXML delegate:(NSObject *)theDelegate 
 connectionIdentifier:(NSString *)identifier requestType:(MGTwitterRequestType)reqType 
      responseType:(MGTwitterResponseType)respType;
+- (void)parser:(NSXMLParser *)theParser didEndElement:(NSString *)elementName 
+  namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName;
 
 - (NSString *)lastOpenedElement;
 - (void)setLastOpenedElement:(NSString *)value;
 
 - (void)addSource;
-- (void)parser:(NSXMLParser *)theParser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName;
 
 @end
