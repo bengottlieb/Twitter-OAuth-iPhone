@@ -288,8 +288,8 @@
 				GCC_PREFIX_HEADER = OAuthConsumer_iPhone_Prefix.pch;
 				INSTALL_PATH = /usr/local/lib;
 				PRODUCT_NAME = OAuthConsumer_iPhone;
-				SDKROOT = iphoneos4.3;
-				VALID_ARCHS = "armv6 armv7 armv7f armv7k";
+				SDKROOT = iphoneos;
+				VALID_ARCHS = "armv6 armv7 armv7f armv7k armv7s";
 			};
 			name = Debug;
 		};
@@ -305,8 +305,8 @@
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				PRODUCT_NAME = OAuthConsumer_iPhone;
-				SDKROOT = iphoneos4.3;
-				VALID_ARCHS = "armv6 armv7 armv7f armv7k";
+				SDKROOT = iphoneos;
+				VALID_ARCHS = "armv6 armv7 armv7f armv7k armv7s";
 			};
 			name = Release;
 		};
