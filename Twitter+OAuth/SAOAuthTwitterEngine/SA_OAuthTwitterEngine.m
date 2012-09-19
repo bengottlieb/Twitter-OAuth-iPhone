@@ -61,7 +61,7 @@
 
 
 - (SA_OAuthTwitterEngine *) initOAuthWithDelegate: (NSObject *) delegate {
-    if (self = (id) [super initWithDelegate: delegate]) {
+    if ((self = (id) [super initWithDelegate: delegate])) {
 		self.requestTokenURL = [NSURL URLWithString: @"http://twitter.com/oauth/request_token"];
 		self.accessTokenURL = [NSURL URLWithString: @"http://twitter.com/oauth/access_token"];
 		self.authorizeURL = [NSURL URLWithString: @"http://twitter.com/oauth/authorize"];
