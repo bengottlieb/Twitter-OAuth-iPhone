@@ -370,12 +370,7 @@
 				INFOPLIST_FILE = "Rsc/OAuthTwitterDemo-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../OAuthConsumer-iPhone/build/Debug-iphoneos\"",
-					"\"$(SRCROOT)/../OAuthConsumer-iPhone/build/Debug-iphonesimulator\"",
-					"\"$(SRCROOT)/../OAuthConsumeriPhoneLib/build/Debug-iphoneos\"",
-					"\"$(SRCROOT)/../OAuthConsumeriPhoneLib/build/Debug-iphonesimulator\"",
 					"\"$(SRCROOT)/../OAuthConsumeriPhoneLib\"",
-					"\"$(SRCROOT)/../OAuthConsumeriPhoneLib/build/Debug\"",
 					"\"$(SRCROOT)/../Twitter+OAuth/Libraries & Headers\"",
 				);
 				PRODUCT_NAME = OAuthTwitterDemo;
@@ -393,12 +388,7 @@
 				INFOPLIST_FILE = "Rsc/OAuthTwitterDemo-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../OAuthConsumer-iPhone/build/Debug-iphoneos\"",
-					"\"$(SRCROOT)/../OAuthConsumer-iPhone/build/Debug-iphonesimulator\"",
-					"\"$(SRCROOT)/../OAuthConsumeriPhoneLib/build/Debug-iphoneos\"",
-					"\"$(SRCROOT)/../OAuthConsumeriPhoneLib/build/Debug-iphonesimulator\"",
 					"\"$(SRCROOT)/../OAuthConsumeriPhoneLib\"",
-					"\"$(SRCROOT)/../OAuthConsumeriPhoneLib/build/Debug\"",
 					"\"$(SRCROOT)/../Twitter+OAuth/Libraries & Headers\"",
 				);
 				PRODUCT_NAME = OAuthTwitterDemo;
