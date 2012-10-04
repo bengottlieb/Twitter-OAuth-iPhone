@@ -21,14 +21,9 @@
     NSString *_clientURL;
     NSString *_clientSourceToken;
 	NSString *_APIDomain;
-#if YAJL_AVAILABLE
 	NSString *_searchDomain;
-#endif
     BOOL _secureConnection;
 	BOOL _clearsCookies;
-#if YAJL_AVAILABLE
-	MGTwitterEngineDeliveryOptions _deliveryOptions;
-#endif
 }
 
 #pragma mark Class management
@@ -49,18 +44,12 @@
 - (void)setClientName:(NSString *)name version:(NSString *)version URL:(NSString *)url token:(NSString *)token;
 - (NSString *)APIDomain;
 - (void)setAPIDomain:(NSString *)domain;
-#if YAJL_AVAILABLE
 - (NSString *)searchDomain;
 - (void)setSearchDomain:(NSString *)domain;
-#endif
 - (BOOL)usesSecureConnection; // YES = uses HTTPS, default is YES
 - (void)setUsesSecureConnection:(BOOL)flag;
 - (BOOL)clearsCookies; // YES = deletes twitter.com cookies when setting username/password, default is NO (see README.txt)
 - (void)setClearsCookies:(BOOL)flag;
-#if YAJL_AVAILABLE
-- (MGTwitterEngineDeliveryOptions)deliveryOptions;
-- (void)setDeliveryOptions:(MGTwitterEngineDeliveryOptions)deliveryOptions;
-#endif
 
 // Connection methods
 - (int)numberOfConnections;
@@ -97,6 +86,8 @@
 - (NSString *)sendUpdate:(NSString *)status; // statuses/update
 - (NSString *)sendUpdate:(NSString *)status inReplyTo:(unsigned long)updateID; // statuses/update
 
+- (NSString *)sendRetweet:(NSString *)updateID;
+
 - (NSString *)getRepliesStartingAtPage:(int)pageNum; // statuses/mentions
 - (NSString *)getRepliesSinceID:(unsigned long)sinceID startingAtPage:(int)pageNum count:(int)count; // statuses/mentions
 - (NSString *)getRepliesSinceID:(unsigned long)sinceID withMaximumID:(unsigned long)maxID startingAtPage:(int)pageNum count:(int)count; // statuses/mentions
@@ -104,12 +95,14 @@
 - (NSString *)deleteUpdate:(unsigned long)updateID; // statuses/destroy
 
 - (NSString *)getFeaturedUsers; // statuses/features (undocumented, returns invalid JSON data)
-
+- (NSString *)getFriends;
+- (NSString *)sendUpdate:(NSString *)status uploadPhoto:(UIImage *)image latitude:(double)aLatitude longitude:(double)aLongitude;
 
 // User methods
 
 - (NSString *)getRecentlyUpdatedFriendsFor:(NSString *)username startingAtPage:(int)pageNum; // statuses/friends & statuses/friends/user
 
+- (NSString *)getFollowers;
 - (NSString *)getFollowersIncludingCurrentStatus:(BOOL)flag; // statuses/followers
 
 - (NSString *)getUserInformationFor:(NSString *)usernameOrID; // users/show
