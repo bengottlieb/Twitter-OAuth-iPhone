@@ -11,36 +11,10 @@
 
 #import "NSData+Base64.h"
 
-#define USE_LIBXML 0
-
-#if YAJL_AVAILABLE
 #define API_FORMAT @"json"
 
-#import "MGTwitterStatusesYAJLParser.h"
-#import "MGTwitterMessagesYAJLParser.h"
-#import "MGTwitterUsersYAJLParser.h"
-#import "MGTwitterMiscYAJLParser.h"
-#import "MGTwitterSearchYAJLParser.h"
-#else
-#define API_FORMAT @"xml"
-
-#if USE_LIBXML
-#import "MGTwitterStatusesLibXMLParser.h"
-#import "MGTwitterMessagesLibXMLParser.h"
-#import "MGTwitterUsersLibXMLParser.h"
-#import "MGTwitterMiscLibXMLParser.h"
-#else
-#import "MGTwitterStatusesParser.h"
-#import "MGTwitterUsersParser.h"
-#import "MGTwitterMessagesParser.h"
-#import "MGTwitterMiscParser.h"
-#endif
-#endif
-
-#define TWITTER_DOMAIN          @"twitter.com"
-#if YAJL_AVAILABLE
+#define TWITTER_DOMAIN          @"api.twitter.com/1.1"
 #define TWITTER_SEARCH_DOMAIN	@"search.twitter.com"
-#endif
 #define HTTP_POST_METHOD        @"POST"
 #define MAX_MESSAGE_LENGTH      140 // Twitter recommends tweets of max 140 chars
 #define MAX_NAME_LENGTH			20
@@ -67,17 +41,17 @@
 - (NSString *)_encodeString:(NSString *)string;
 
 // Connection/Request methods
-- (NSString *)_sendRequestWithMethod:(NSString *)method 
-                                path:(NSString *)path 
+- (NSString *)_sendRequestWithMethod:(NSString *)method
+                                path:(NSString *)path
                      queryParameters:(NSDictionary *)params
-                                body:(NSString *)body 
-                         requestType:(MGTwitterRequestType)requestType 
+                                body:(NSString *)body
+                         requestType:(MGTwitterRequestType)requestType
                         responseType:(MGTwitterResponseType)responseType;
 
-- (NSString *)_sendUploadRequestWithMethod:(NSString *)method 
-                                      path:(NSString *)path 
-                                      body:(NSString *)body 
-                               requestType:(MGTwitterRequestType)requestType 
+- (NSString *)_sendUploadRequestWithMethod:(NSString *)method
+                                      path:(NSString *)path
+                                      body:(NSString *)body
+                               requestType:(MGTwitterRequestType)requestType
                               responseType:(MGTwitterResponseType)responseType;
 
 // Parsing methods
@@ -103,23 +77,17 @@
 
 - (MGTwitterEngine *)initWithDelegate:(NSObject<MGTwitterEngineDelegate>*)newDelegate
 {
-    if (self = [super init]) {
-        _delegate = newDelegate; // deliberately weak reference
+    if ((self = [super init])) {
+        _delegate = (id) newDelegate; // deliberately weak reference
         _connections = [[NSMutableDictionary alloc] initWithCapacity:0];
         _clientName = [DEFAULT_CLIENT_NAME retain];
         _clientVersion = [DEFAULT_CLIENT_VERSION retain];
         _clientURL = [DEFAULT_CLIENT_URL retain];
 		_clientSourceToken = [DEFAULT_CLIENT_TOKEN retain];
 		_APIDomain = [TWITTER_DOMAIN retain];
-#if YAJL_AVAILABLE
 		_searchDomain = [TWITTER_SEARCH_DOMAIN retain];
-#endif
-        
         _secureConnection = YES;
 		_clearsCookies = NO;
-#if YAJL_AVAILABLE
-		_deliveryOptions = MGTwitterEngineDeliveryAllResultsOption;
-#endif
     }
     
     return self;
@@ -140,10 +108,7 @@
     [_clientURL release];
     [_clientSourceToken release];
 	[_APIDomain release];
-#if YAJL_AVAILABLE
 	[_searchDomain release];
-#endif
-    
     [super dealloc];
 }
 
@@ -188,15 +153,15 @@
     
 	if ([self clearsCookies]) {
 		// Remove all cookies for twitter, to ensure next connection uses new credentials.
-		NSString *urlString = [NSString stringWithFormat:@"%@://%@", 
-							   (_secureConnection) ? @"https" : @"http", 
+		NSString *urlString = [NSString stringWithFormat:@"%@://%@",
+							   (_secureConnection) ? @"https" : @"http",
 							   _APIDomain];
 		NSURL *url = [NSURL URLWithString:urlString];
 		
 		NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
 		NSEnumerator *enumerator = [[cookieStorage cookiesForURL:url] objectEnumerator];
 		NSHTTPCookie *cookie = nil;
-		while (cookie = [enumerator nextObject]) {
+		while ((cookie = [enumerator nextObject])) {
 			[cookieStorage deleteCookie:cookie];
 		}
 	}
@@ -257,8 +222,6 @@
 }
 
 
-#if YAJL_AVAILABLE
-
 - (NSString *)searchDomain
 {
 	return [[_searchDomain retain] autorelease];
@@ -274,8 +237,6 @@
 		_searchDomain = [domain retain];
 	}
 }
-
-#endif
 
 
 - (BOOL)usesSecureConnection
@@ -300,20 +261,6 @@
 {
 	_clearsCookies = flag;
 }
-
-#if YAJL_AVAILABLE
-
-- (MGTwitterEngineDeliveryOptions)deliveryOptions
-{
-	return _deliveryOptions;
-}
-
-- (void)setDeliveryOptions:(MGTwitterEngineDeliveryOptions)deliveryOptions
-{
-	_deliveryOptions = deliveryOptions;
-}
-
-#endif
 
 #pragma mark Connection methods
 
@@ -383,7 +330,7 @@
                 [str appendString:@"&"];
             }
             NSString *name = [names objectAtIndex:i];
-            [str appendString:[NSString stringWithFormat:@"%@=%@", 
+            [str appendString:[NSString stringWithFormat:@"%@=%@",
                                name, [self _encodeString:[params objectForKey:name]]]];
         }
     }
@@ -408,9 +355,9 @@
 
 - (NSString *)_encodeString:(NSString *)string
 {
-    NSString *result = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, 
-                                                                           (CFStringRef)string, 
-                                                                           NULL, 
+    NSString *result = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL,
+                                                                           (CFStringRef)string,
+                                                                           NULL,
                                                                            (CFStringRef)@";/?:@&=$+{}<>,",
                                                                            kCFStringEncodingUTF8);
     return [result autorelease];
@@ -419,7 +366,7 @@
 
 - (NSString *)getImageAtURL:(NSString *)urlString
 {
-    // This is a method implemented for the convenience of the client, 
+    // This is a method implemented for the convenience of the client,
     // allowing asynchronous downloading of users' Twitter profile images.
 	NSString *encodedUrlString = [urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSURL *url = [NSURL URLWithString:encodedUrlString];
@@ -428,16 +375,16 @@
     }
     
     // Construct an NSMutableURLRequest for the URL and set appropriate request method.
-    NSMutableURLRequest *theRequest = [NSMutableURLRequest requestWithURL:url 
-                                                              cachePolicy:NSURLRequestReloadIgnoringCacheData 
+    NSMutableURLRequest *theRequest = [NSMutableURLRequest requestWithURL:url
+                                                              cachePolicy:NSURLRequestReloadIgnoringCacheData
                                                           timeoutInterval:URL_REQUEST_TIMEOUT];
     
-    // Create a connection using this request, with the default timeout and caching policy, 
+    // Create a connection using this request, with the default timeout and caching policy,
     // and appropriate Twitter request and response types for parsing and error reporting.
     MGTwitterHTTPURLConnection *connection;
-    connection = [[MGTwitterHTTPURLConnection alloc] initWithRequest:theRequest 
-                                                            delegate:self 
-                                                         requestType:MGTwitterImageRequest 
+    connection = [[MGTwitterHTTPURLConnection alloc] initWithRequest:theRequest
+                                                            delegate:self
+                                                         requestType:MGTwitterImageRequest
                                                         responseType:MGTwitterImage];
     
     if (!connection) {
@@ -455,11 +402,11 @@
 
 #define SET_AUTHORIZATION_IN_HEADER 1
 
-- (NSString *)_sendRequestWithMethod:(NSString *)method 
-                                path:(NSString *)path 
-                     queryParameters:(NSDictionary *)params 
-                                body:(NSString *)body 
-                         requestType:(MGTwitterRequestType)requestType 
+- (NSString *)_sendRequestWithMethod:(NSString *)method
+                                path:(NSString *)path
+                     queryParameters:(NSDictionary *)params
+                                body:(NSString *)body
+                         requestType:(MGTwitterRequestType)requestType
                         responseType:(MGTwitterResponseType)responseType
 {
     // Construct appropriate URL string.
@@ -468,7 +415,6 @@
         fullPath = [self _queryStringWithBase:fullPath parameters:params prefixed:YES];
     }
     
-#if YAJL_AVAILABLE
 	NSString *domain = nil;
 	NSString *connectionType = nil;
 	if (requestType == MGTwitterSearchRequest || requestType == MGTwitterSearchCurrentTrendsRequest)
@@ -488,27 +434,15 @@
 			connectionType = @"http";
             }
         }
-#else
-	NSString *domain = _APIDomain;
-	NSString *connectionType = nil;
-	if (_secureConnection)
-        {
-		connectionType = @"https";
-        }
-	else
-        {
-		connectionType = @"http";
-        }
-#endif
 	
 #if SET_AUTHORIZATION_IN_HEADER
-    NSString *urlString = [NSString stringWithFormat:@"%@://%@/%@", 
+    NSString *urlString = [NSString stringWithFormat:@"%@://%@/%@",
                            connectionType,
                            domain, fullPath];
-#else    
-    NSString *urlString = [NSString stringWithFormat:@"%@://%@:%@@%@/%@", 
-                           connectionType, 
-                           [self _encodeString:_username], [self _encodeString:_password], 
+#else
+    NSString *urlString = [NSString stringWithFormat:@"%@://%@:%@@%@/%@",
+                           connectionType,
+                           [self _encodeString:_username], [self _encodeString:_password],
                            domain, fullPath];
 #endif
     
@@ -524,8 +458,8 @@
 #endif
     
     // Construct an NSMutableURLRequest for the URL and set appropriate request method.
-    NSMutableURLRequest *theRequest = [NSMutableURLRequest requestWithURL:finalURL 
-                                                              cachePolicy:NSURLRequestReloadIgnoringCacheData 
+    NSMutableURLRequest *theRequest = [NSMutableURLRequest requestWithURL:finalURL
+                                                              cachePolicy:NSURLRequestReloadIgnoringCacheData
                                                           timeoutInterval:URL_REQUEST_TIMEOUT];
     if (method) {
         [theRequest setHTTPMethod:method];
@@ -556,8 +490,8 @@
 			finalBody = [finalBody stringByAppendingString:body];
 		}
         if (_clientSourceToken) {
-            finalBody = [finalBody stringByAppendingString:[NSString stringWithFormat:@"%@source=%@", 
-                                                            (body) ? @"&" : @"?" , 
+            finalBody = [finalBody stringByAppendingString:[NSString stringWithFormat:@"%@source=%@",
+                                                            (body) ? @"&" : @"?" ,
                                                             _clientSourceToken]];
         }
         
@@ -572,12 +506,12 @@
     }
     
     
-    // Create a connection using this request, with the default timeout and caching policy, 
+    // Create a connection using this request, with the default timeout and caching policy,
     // and appropriate Twitter request and response types for parsing and error reporting.
     MGTwitterHTTPURLConnection *connection;
-    connection = [[MGTwitterHTTPURLConnection alloc] initWithRequest:theRequest 
-                                                            delegate:self 
-                                                         requestType:requestType 
+    connection = [[MGTwitterHTTPURLConnection alloc] initWithRequest:theRequest
+                                                            delegate:self
+                                                         requestType:requestType
                                                         responseType:responseType];
     
     if (!connection) {
@@ -593,125 +527,21 @@
 
 #pragma mark Parsing methods
 
-#if YAJL_AVAILABLE
 - (void)_parseDataForConnection:(MGTwitterHTTPURLConnection *)connection
 {
-    NSString *identifier = [[[connection identifier] copy] autorelease];
-    NSData *jsonData = [[[connection data] copy] autorelease];
-    MGTwitterRequestType requestType = [connection requestType];
+    NSError     *anError = nil;
+    NSString    *identifier = [[[connection identifier] copy] autorelease];
+    NSData      *jsonData = [[[connection data] copy] autorelease];
     MGTwitterResponseType responseType = [connection responseType];
     
-	NSURL *URL = [connection URL];
-    
-#if DEBUG
-	if (NO) {
-		NSLog(@"MGTwitterEngine: jsonData = %@ from %@", [[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding] autorelease], URL);
-	}
-#endif
-    
-    switch (responseType) {
-        case MGTwitterStatuses:
-        case MGTwitterStatus:
-            [MGTwitterStatusesYAJLParser parserWithJSON:jsonData delegate:self 
-                                   connectionIdentifier:identifier requestType:requestType 
-                                           responseType:responseType URL:URL deliveryOptions:_deliveryOptions];
-            break;
-        case MGTwitterUsers:
-        case MGTwitterUser:
-            [MGTwitterUsersYAJLParser parserWithJSON:jsonData delegate:self 
-                                connectionIdentifier:identifier requestType:requestType 
-                                        responseType:responseType URL:URL deliveryOptions:_deliveryOptions];
-            break;
-        case MGTwitterDirectMessages:
-        case MGTwitterDirectMessage:
-            [MGTwitterMessagesYAJLParser parserWithJSON:jsonData delegate:self 
-                                   connectionIdentifier:identifier requestType:requestType 
-                                           responseType:responseType URL:URL deliveryOptions:_deliveryOptions];
-            break;
-		case MGTwitterMiscellaneous:
-			[MGTwitterMiscYAJLParser parserWithJSON:jsonData delegate:self 
-                               connectionIdentifier:identifier requestType:requestType 
-                                       responseType:responseType URL:URL deliveryOptions:_deliveryOptions];
-			break;
-        case MGTwitterSearchResults:
- 			[MGTwitterSearchYAJLParser parserWithJSON:jsonData delegate:self 
-                                 connectionIdentifier:identifier requestType:requestType 
-                                         responseType:responseType URL:URL deliveryOptions:_deliveryOptions];
-			break;
-        default:
-            break;
-    }
+    id  object = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&anError];
+    if (object && ![object isKindOfClass:[NSArray class]])
+        object = [NSArray arrayWithObject:object];
+    if (object)
+        [self parsingSucceededForRequest:identifier ofResponseType:responseType withParsedObjects:object];
+    else if (anError)
+        [self parsingFailedForRequest:identifier ofResponseType:responseType withError:anError];
 }
-#else
-- (void)_parseDataForConnection:(MGTwitterHTTPURLConnection *)connection
-{
-    NSString *identifier = [[[connection identifier] copy] autorelease];
-    NSData *xmlData = [[[connection data] copy] autorelease];
-    MGTwitterRequestType requestType = [connection requestType];
-    MGTwitterResponseType responseType = [connection responseType];
-    
-#if USE_LIBXML
-	NSURL *URL = [connection URL];
-    
-    switch (responseType) {
-        case MGTwitterStatuses:
-        case MGTwitterStatus:
-            [MGTwitterStatusesLibXMLParser parserWithXML:xmlData delegate:self 
-                                    connectionIdentifier:identifier requestType:requestType 
-                                            responseType:responseType URL:URL];
-            break;
-        case MGTwitterUsers:
-        case MGTwitterUser:
-            [MGTwitterUsersLibXMLParser parserWithXML:xmlData delegate:self 
-                                 connectionIdentifier:identifier requestType:requestType 
-                                         responseType:responseType URL:URL];
-            break;
-        case MGTwitterDirectMessages:
-        case MGTwitterDirectMessage:
-            [MGTwitterMessagesLibXMLParser parserWithXML:xmlData delegate:self 
-                                    connectionIdentifier:identifier requestType:requestType 
-                                            responseType:responseType URL:URL];
-            break;
-		case MGTwitterMiscellaneous:
-			[MGTwitterMiscLibXMLParser parserWithXML:xmlData delegate:self 
-                                connectionIdentifier:identifier requestType:requestType 
-                                        responseType:responseType URL:URL];
-			break;
-        default:
-            break;
-    }
-#else
-    // Determine which type of parser to use.
-    switch (responseType) {
-        case MGTwitterStatuses:
-        case MGTwitterStatus:
-            [MGTwitterStatusesParser parserWithXML:xmlData delegate:self 
-                              connectionIdentifier:identifier requestType:requestType 
-                                      responseType:responseType];
-            break;
-        case MGTwitterUsers:
-        case MGTwitterUser:
-            [MGTwitterUsersParser parserWithXML:xmlData delegate:self 
-                           connectionIdentifier:identifier requestType:requestType 
-                                   responseType:responseType];
-            break;
-        case MGTwitterDirectMessages:
-        case MGTwitterDirectMessage:
-            [MGTwitterMessagesParser parserWithXML:xmlData delegate:self 
-                              connectionIdentifier:identifier requestType:requestType 
-                                      responseType:responseType];
-            break;
-		case MGTwitterMiscellaneous:
-			[MGTwitterMiscParser parserWithXML:xmlData delegate:self 
-						  connectionIdentifier:identifier requestType:requestType 
-								  responseType:responseType];
-			break;
-        default:
-            break;
-    }
-#endif
-}
-#endif
 
 #pragma mark Delegate methods
 
@@ -722,8 +552,8 @@
 
 #pragma mark MGTwitterParserDelegate methods
 
-- (void)parsingSucceededForRequest:(NSString *)identifier 
-                    ofResponseType:(MGTwitterResponseType)responseType 
+- (void)parsingSucceededForRequest:(NSString *)identifier
+                    ofResponseType:(MGTwitterResponseType)responseType
                  withParsedObjects:(NSArray *)parsedObjects
 {
     // Forward appropriate message to _delegate, depending on responseType.
@@ -747,35 +577,22 @@
 			if ([self _isValidDelegateForSelector:@selector(miscInfoReceived:forRequest:)])
 				[_delegate miscInfoReceived:parsedObjects forRequest:identifier];
 			break;
-#if YAJL_AVAILABLE
 		case MGTwitterSearchResults:
 			if ([self _isValidDelegateForSelector:@selector(searchResultsReceived:forRequest:)])
 				[_delegate searchResultsReceived:parsedObjects forRequest:identifier];
 			break;
-#endif
         default:
             break;
     }
 }
 
-- (void)parsingFailedForRequest:(NSString *)requestIdentifier 
-                 ofResponseType:(MGTwitterResponseType)responseType 
+- (void)parsingFailedForRequest:(NSString *)requestIdentifier
+                 ofResponseType:(MGTwitterResponseType)responseType
                       withError:(NSError *)error
 {
 	if ([self _isValidDelegateForSelector:@selector(requestFailed:withError:)])
 		[_delegate requestFailed:requestIdentifier withError:error];
 }
-
-#if YAJL_AVAILABLE
-
-- (void)parsedObject:(NSDictionary *)dictionary forRequest:(NSString *)requestIdentifier 
-      ofResponseType:(MGTwitterResponseType)responseType
-{
-	if ([self _isValidDelegateForSelector:@selector(receivedObject:forRequest:)])
-		[_delegate receivedObject:dictionary forRequest:requestIdentifier];
-}
-
-#endif
 
 #pragma mark NSURLConnection delegate methods
 
@@ -783,7 +600,7 @@
 - (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 {
 	if (_username && _password && [challenge previousFailureCount] == 0 && ![challenge proposedCredential]) {
-		NSURLCredential *credential = [NSURLCredential credentialWithUser:_username password:_password 
+		NSURLCredential *credential = [NSURLCredential credentialWithUser:_username password:_password
 															  persistence:NSURLCredentialPersistenceForSession];
 		[[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
 	} else {
@@ -820,8 +637,8 @@
 		if ([self _isValidDelegateForSelector:@selector(requestSucceeded:)])
 			[_delegate requestSucceeded:[connection identifier]];
         if (statusCode == 304) {
-            [self parsingSucceededForRequest:[connection identifier] 
-                              ofResponseType:[connection responseType] 
+            [self parsingSucceededForRequest:[connection identifier]
+                              ofResponseType:[connection responseType]
                            withParsedObjects:[NSArray array]];
         }
         
@@ -837,9 +654,9 @@
     if (NO) {
         // Display headers for debugging.
         NSHTTPURLResponse *resp = (NSHTTPURLResponse *)response;
-        NSLog(@"MGTwitterEngine: (%d) [%@]:\r%@", 
-              [resp statusCode], 
-              [NSHTTPURLResponse localizedStringForStatusCode:[resp statusCode]], 
+        NSLog(@"MGTwitterEngine: (%d) [%@]:\r%@",
+              [resp statusCode],
+              [NSHTTPURLResponse localizedStringForStatusCode:[resp statusCode]],
               [resp allHeaderFields]);
     }
 #endif
@@ -885,7 +702,7 @@
         if (NO) {
             // Dump XML to file for debugging.
             NSString *dataString = [NSString stringWithUTF8String:[receivedData bytes]];
-            [dataString writeToFile:[[NSString stringWithFormat:@"~/Desktop/twitter_messages.%@", API_FORMAT] stringByExpandingTildeInPath] 
+            [dataString writeToFile:[[NSString stringWithFormat:@"~/Desktop/twitter_messages.%@", API_FORMAT] stringByExpandingTildeInPath]
                          atomically:NO encoding:NSUnicodeStringEncoding error:NULL];
         }
 #endif
@@ -926,8 +743,8 @@
 {
     NSString *path = [NSString stringWithFormat:@"statuses/public_timeline.%@", API_FORMAT];
     
-	return [self _sendRequestWithMethod:nil path:path queryParameters:nil body:nil 
-                            requestType:MGTwitterPublicTimelineRequest 
+	return [self _sendRequestWithMethod:nil path:path queryParameters:nil body:nil
+                            requestType:MGTwitterPublicTimelineRequest
                            responseType:MGTwitterStatuses];
 }
 
@@ -946,10 +763,10 @@
     
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:0];
     if (sinceID > 0) {
-        [params setObject:[NSString stringWithFormat:@"%u", sinceID] forKey:@"since_id"];
+        [params setObject:[NSString stringWithFormat:@"%lu", sinceID] forKey:@"since_id"];
     }
     if (maxID > 0) {
-        [params setObject:[NSString stringWithFormat:@"%u", maxID] forKey:@"max_id"];
+        [params setObject:[NSString stringWithFormat:@"%lu", maxID] forKey:@"max_id"];
     }
     if (page > 0) {
         [params setObject:[NSString stringWithFormat:@"%d", page] forKey:@"page"];
@@ -958,8 +775,8 @@
         [params setObject:[NSString stringWithFormat:@"%d", count] forKey:@"count"];
     }
     
-    return [self _sendRequestWithMethod:nil path:path queryParameters:params body:nil 
-                            requestType:MGTwitterFollowedTimelineRequest 
+    return [self _sendRequestWithMethod:nil path:path queryParameters:params body:nil
+                            requestType:MGTwitterFollowedTimelineRequest
                            responseType:MGTwitterStatuses];
 }
 
@@ -979,10 +796,10 @@
     
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:0];
     if (sinceID > 0) {
-        [params setObject:[NSString stringWithFormat:@"%u", sinceID] forKey:@"since_id"];
+        [params setObject:[NSString stringWithFormat:@"%lu", sinceID] forKey:@"since_id"];
     }
     if (maxID > 0) {
-        [params setObject:[NSString stringWithFormat:@"%u", maxID] forKey:@"max_id"];
+        [params setObject:[NSString stringWithFormat:@"%lu", maxID] forKey:@"max_id"];
     }
 	if (page > 0) {
         [params setObject:[NSString stringWithFormat:@"%d", page] forKey:@"page"];
@@ -995,8 +812,8 @@
 		requestType = MGTwitterUserTimelineForUserRequest;
     }
     
-    return [self _sendRequestWithMethod:nil path:path queryParameters:params body:nil 
-                            requestType:requestType 
+    return [self _sendRequestWithMethod:nil path:path queryParameters:params body:nil
+                            requestType:requestType
                            responseType:MGTwitterStatuses];
 }
 
@@ -1006,9 +823,9 @@
 
 - (NSString *)getUpdate:(unsigned long)updateID
 {
-    NSString *path = [NSString stringWithFormat:@"statuses/show/%u.%@", updateID, API_FORMAT];
+    NSString *path = [NSString stringWithFormat:@"statuses/show/%lu.%@", updateID, API_FORMAT];
     
-    return [self _sendRequestWithMethod:nil path:path queryParameters:nil body:nil 
+    return [self _sendRequestWithMethod:nil path:path queryParameters:nil body:nil
                             requestType:MGTwitterUpdateGetRequest
                            responseType:MGTwitterStatus];
 }
@@ -1036,12 +853,12 @@
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:0];
     [params setObject:trimmedText forKey:@"status"];
     if (updateID > 0) {
-        [params setObject:[NSString stringWithFormat:@"%u", updateID] forKey:@"in_reply_to_status_id"];
+        [params setObject:[NSString stringWithFormat:@"%lu", updateID] forKey:@"in_reply_to_status_id"];
     }
     NSString *body = [self _queryStringWithBase:nil parameters:params prefixed:NO];
     
-    return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path 
-                        queryParameters:params body:body 
+    return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path
+                        queryParameters:params body:body
                             requestType:MGTwitterUpdateSendRequest
                            responseType:MGTwitterStatus];
 }
@@ -1062,7 +879,7 @@
     NSString *body = [self _queryStringWithBase:nil parameters:params prefixed:NO];
     
     
-    return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path 
+    return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path
                         queryParameters:params body:body
                             requestType:MGTwitterUpdateSendRequest
                            responseType:MGTwitterStatus];
@@ -1083,7 +900,7 @@
     body = [body stringByAppendingFormat:@"--%@\r\n", boundary];
     body = [body stringByAppendingFormat:@"Content-Disposition: form-data; name=\"media_data[]\"; filename=\"photo.png\"\r\n"];
     body = [body stringByAppendingFormat:@"Content-Type: application/octet-stream\r\n"];
-    body = [body stringByAppendingFormat:@"\r\n"];  
+    body = [body stringByAppendingFormat:@"\r\n"];
     body = [body stringByAppendingFormat:[imageData base64EncodingWithLineLength:0]];
     body = [body stringByAppendingFormat:@"\r\n--%@\r\n", boundary];
     body = [body stringByAppendingFormat:@"Content-Disposition: form-data; name=\"status\"\r\n"];
@@ -1111,8 +928,8 @@
     NSString *path = [NSString stringWithFormat:@"statuses/update_with_media.%@", API_FORMAT];
     
     
-    return [self _sendUploadRequestWithMethod:HTTP_POST_METHOD 
-                                         path:path 
+    return [self _sendUploadRequestWithMethod:HTTP_POST_METHOD
+                                         path:path
                                          body:body
                                   requestType:MGTwitterUpdateSendRequest
                                  responseType:MGTwitterStatus];
@@ -1139,10 +956,10 @@
     
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:0];
     if (sinceID > 0) {
-        [params setObject:[NSString stringWithFormat:@"%u", sinceID] forKey:@"since_id"];
+        [params setObject:[NSString stringWithFormat:@"%lu", sinceID] forKey:@"since_id"];
     }
     if (maxID > 0) {
-        [params setObject:[NSString stringWithFormat:@"%u", maxID] forKey:@"max_id"];
+        [params setObject:[NSString stringWithFormat:@"%lu", maxID] forKey:@"max_id"];
     }
     if (page > 0) {
         [params setObject:[NSString stringWithFormat:@"%d", page] forKey:@"page"];
@@ -1151,8 +968,8 @@
         [params setObject:[NSString stringWithFormat:@"%d", count] forKey:@"count"];
     }
     
-    return [self _sendRequestWithMethod:nil path:path queryParameters:params body:nil 
-                            requestType:MGTwitterRepliesRequest 
+    return [self _sendRequestWithMethod:nil path:path queryParameters:params body:nil
+                            requestType:MGTwitterRepliesRequest
                            responseType:MGTwitterStatuses];
 }
 
@@ -1162,9 +979,9 @@
 
 - (NSString *)deleteUpdate:(unsigned long)updateID
 {
-    NSString *path = [NSString stringWithFormat:@"statuses/destroy/%u.%@", updateID, API_FORMAT];
+    NSString *path = [NSString stringWithFormat:@"statuses/destroy/%lu.%@", updateID, API_FORMAT];
     
-    return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path queryParameters:nil body:nil 
+    return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path queryParameters:nil body:nil
                             requestType:MGTwitterUpdateDeleteRequest
                            responseType:MGTwitterStatus];
 }
@@ -1177,14 +994,23 @@
 {
     NSString *path = [NSString stringWithFormat:@"statuses/featured.%@", API_FORMAT];
     
-    return [self _sendRequestWithMethod:nil path:path queryParameters:nil body:nil 
-                            requestType:MGTwitterFeaturedUsersRequest 
+    return [self _sendRequestWithMethod:nil path:path queryParameters:nil body:nil
+                            requestType:MGTwitterFeaturedUsersRequest
                            responseType:MGTwitterUsers];
 }
 
 
 #pragma mark User methods
 
+- (NSString *)getFriends
+{
+    NSString *path = [NSString stringWithFormat:@"friends/ids.%@", API_FORMAT];
+    MGTwitterRequestType requestType = MGTwitterFriendUpdatesRequest;
+    
+    return [self _sendRequestWithMethod:nil path:path queryParameters:nil body:nil
+                            requestType:requestType
+                           responseType:MGTwitterUsers];
+}
 
 - (NSString *)getRecentlyUpdatedFriendsFor:(NSString *)username startingAtPage:(int)page
 {
@@ -1200,13 +1026,24 @@
         [params setObject:[NSString stringWithFormat:@"%d", page] forKey:@"page"];
     }
     
-    return [self _sendRequestWithMethod:nil path:path queryParameters:params body:nil 
-                            requestType:requestType 
+    return [self _sendRequestWithMethod:nil path:path queryParameters:params body:nil
+                            requestType:requestType
                            responseType:MGTwitterUsers];
 }
 
 
 #pragma mark -
+
+
+- (NSString *)getFollowers
+{
+    NSString *path = [NSString stringWithFormat:@"followers/ids.%@", API_FORMAT];
+    MGTwitterRequestType requestType = MGTwitterFriendUpdatesRequest;
+    
+    return [self _sendRequestWithMethod:nil path:path queryParameters:nil body:nil
+                            requestType:requestType
+                           responseType:MGTwitterUsers];
+}
 
 
 - (NSString *)getFollowersIncludingCurrentStatus:(BOOL)flag
@@ -1218,7 +1055,7 @@
         [params setObject:@"true" forKey:@"lite"]; // slightly bizarre, but correct.
     }
     
-    return [self _sendRequestWithMethod:nil path:path queryParameters:params body:nil 
+    return [self _sendRequestWithMethod:nil path:path queryParameters:params body:nil
                             requestType:MGTwitterFollowerUpdatesRequest
                            responseType:MGTwitterUsers];
 }
@@ -1234,8 +1071,8 @@
     }
     NSString *path = [NSString stringWithFormat:@"users/show/%@.%@", usernameOrID, API_FORMAT];
     
-    return [self _sendRequestWithMethod:nil path:path queryParameters:nil body:nil 
-                            requestType:MGTwitterUserInformationRequest 
+    return [self _sendRequestWithMethod:nil path:path queryParameters:nil body:nil
+                            requestType:MGTwitterUserInformationRequest
                            responseType:MGTwitterUser];
 }
 
@@ -1250,8 +1087,8 @@
         return nil;
     }
     
-    return [self _sendRequestWithMethod:nil path:path queryParameters:params body:nil 
-                            requestType:MGTwitterUserInformationRequest 
+    return [self _sendRequestWithMethod:nil path:path queryParameters:params body:nil
+                            requestType:MGTwitterUserInformationRequest
                            responseType:MGTwitterUser];
 }
 
@@ -1270,10 +1107,10 @@
     
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:0];
     if (sinceID > 0) {
-        [params setObject:[NSString stringWithFormat:@"%u", sinceID] forKey:@"since_id"];
+        [params setObject:[NSString stringWithFormat:@"%lu", sinceID] forKey:@"since_id"];
     }
     if (maxID > 0) {
-        [params setObject:[NSString stringWithFormat:@"%u", maxID] forKey:@"max_id"];
+        [params setObject:[NSString stringWithFormat:@"%lu", maxID] forKey:@"max_id"];
     }
     if (page > 0) {
         [params setObject:[NSString stringWithFormat:@"%d", page] forKey:@"page"];
@@ -1282,8 +1119,8 @@
         [params setObject:[NSString stringWithFormat:@"%d", count] forKey:@"count"];
     }
     
-    return [self _sendRequestWithMethod:nil path:path queryParameters:params body:nil 
-                            requestType:MGTwitterDirectMessagesRequest 
+    return [self _sendRequestWithMethod:nil path:path queryParameters:params body:nil
+                            requestType:MGTwitterDirectMessagesRequest
                            responseType:MGTwitterDirectMessages];
 }
 
@@ -1301,10 +1138,10 @@
     
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:0];
     if (sinceID > 0) {
-        [params setObject:[NSString stringWithFormat:@"%u", sinceID] forKey:@"since_id"];
+        [params setObject:[NSString stringWithFormat:@"%lu", sinceID] forKey:@"since_id"];
     }
     if (maxID > 0) {
-        [params setObject:[NSString stringWithFormat:@"%u", maxID] forKey:@"max_id"];
+        [params setObject:[NSString stringWithFormat:@"%lu", maxID] forKey:@"max_id"];
     }
     if (page > 0) {
         [params setObject:[NSString stringWithFormat:@"%d", page] forKey:@"page"];
@@ -1313,8 +1150,8 @@
         [params setObject:[NSString stringWithFormat:@"%d", count] forKey:@"count"];
     }
     
-    return [self _sendRequestWithMethod:nil path:path queryParameters:params body:nil 
-                            requestType:MGTwitterDirectMessagesSentRequest 
+    return [self _sendRequestWithMethod:nil path:path queryParameters:params body:nil
+                            requestType:MGTwitterDirectMessagesSentRequest
                            responseType:MGTwitterDirectMessages];
 }
 
@@ -1340,8 +1177,8 @@
     [params setObject:username forKey:@"user"];
     NSString *body = [self _queryStringWithBase:nil parameters:params prefixed:NO];
     
-    return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path 
-                        queryParameters:params body:body 
+    return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path
+                        queryParameters:params body:body
                             requestType:MGTwitterDirectMessageSendRequest
                            responseType:MGTwitterDirectMessage];
 }
@@ -1349,10 +1186,10 @@
 
 - (NSString *)deleteDirectMessage:(unsigned long)updateID
 {
-    NSString *path = [NSString stringWithFormat:@"direct_messages/destroy/%u.%@", updateID, API_FORMAT];
+    NSString *path = [NSString stringWithFormat:@"direct_messages/destroy/%lu.%@", updateID, API_FORMAT];
     
-    return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path queryParameters:nil body:nil 
-                            requestType:MGTwitterDirectMessageDeleteRequest 
+    return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path queryParameters:nil body:nil
+                            requestType:MGTwitterDirectMessageDeleteRequest
                            responseType:MGTwitterDirectMessage];
 }
 
@@ -1368,8 +1205,8 @@
     }
     NSString *path = [NSString stringWithFormat:@"friendships/create/%@.%@", username, API_FORMAT];
     
-    return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path queryParameters:nil body:nil 
-                            requestType:MGTwitterUpdatesEnableRequest 
+    return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path queryParameters:nil body:nil
+                            requestType:MGTwitterUpdatesEnableRequest
                            responseType:MGTwitterUser];
 }
 
@@ -1382,8 +1219,8 @@
     }
     NSString *path = [NSString stringWithFormat:@"friendships/destroy/%@.%@", username, API_FORMAT];
     
-    return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path queryParameters:nil body:nil 
-                            requestType:MGTwitterUpdatesDisableRequest 
+    return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path queryParameters:nil body:nil
+                            requestType:MGTwitterUpdatesDisableRequest
                            responseType:MGTwitterUser];
 }
 
@@ -1399,8 +1236,8 @@
 	
     NSString *path = [NSString stringWithFormat:@"friendships/exists.%@", API_FORMAT];
     
-    return [self _sendRequestWithMethod:nil path:path queryParameters:params body:nil 
-                            requestType:MGTwitterUpdatesCheckRequest 
+    return [self _sendRequestWithMethod:nil path:path queryParameters:params body:nil
+                            requestType:MGTwitterUpdatesCheckRequest
                            responseType:MGTwitterMiscellaneous];
 }
 
@@ -1412,8 +1249,8 @@
 {
     NSString *path = [NSString stringWithFormat:@"account/verify_credentials.%@", API_FORMAT];
     
-    return [self _sendRequestWithMethod:nil path:path queryParameters:nil body:nil 
-                            requestType:MGTwitterAccountRequest 
+    return [self _sendRequestWithMethod:nil path:path queryParameters:nil body:nil
+                            requestType:MGTwitterAccountRequest
                            responseType:MGTwitterUser];
 }
 
@@ -1422,8 +1259,8 @@
 {
     NSString *path = @"account/end_session"; // deliberately no format specified
     
-    return [self _sendRequestWithMethod:nil path:path queryParameters:nil body:nil 
-                            requestType:MGTwitterAccountRequest 
+    return [self _sendRequestWithMethod:nil path:path queryParameters:nil body:nil
+                            requestType:MGTwitterAccountRequest
                            responseType:MGTwitterGeneric];
 }
 
@@ -1449,9 +1286,9 @@
     [params setObject:trimmedLocation forKey:@"location"];
     NSString *body = [self _queryStringWithBase:nil parameters:params prefixed:NO];
     
-    return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path 
-                        queryParameters:params body:body 
-                            requestType:MGTwitterAccountLocationRequest 
+    return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path
+                        queryParameters:params body:body
+                            requestType:MGTwitterAccountLocationRequest
                            responseType:MGTwitterUser];
 }
 
@@ -1473,7 +1310,7 @@
         [params setObject:deliveryMethod forKey:@"device"];
     }
     
-    return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path queryParameters:params body:nil 
+    return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path queryParameters:params body:nil
                             requestType:MGTwitterAccountDeliveryRequest
                            responseType:MGTwitterUser];
 }
@@ -1486,8 +1323,8 @@
 {
 	NSString *path = [NSString stringWithFormat:@"account/rate_limit_status.%@", API_FORMAT];
 	
-	return [self _sendRequestWithMethod:nil path:path queryParameters:nil body:nil 
-                            requestType:MGTwitterAccountStatusRequest 
+	return [self _sendRequestWithMethod:nil path:path queryParameters:nil body:nil
+                            requestType:MGTwitterAccountStatusRequest
                            responseType:MGTwitterMiscellaneous];
 }
 
@@ -1509,8 +1346,8 @@
 		requestType = MGTwitterFavoritesForUserRequest;
     }
     
-    return [self _sendRequestWithMethod:nil path:path queryParameters:params body:nil 
-                            requestType:requestType 
+    return [self _sendRequestWithMethod:nil path:path queryParameters:params body:nil
+                            requestType:requestType
                            responseType:MGTwitterStatuses];
 }
 
@@ -1524,16 +1361,16 @@
 	MGTwitterRequestType requestType;
 	if (flag)
         {
-		path = [NSString stringWithFormat:@"favorites/create/%u.%@", updateID, API_FORMAT];
+		path = [NSString stringWithFormat:@"favorites/create/%lu.%@", updateID, API_FORMAT];
 		requestType = MGTwitterFavoritesEnableRequest;
         }
 	else {
-		path = [NSString stringWithFormat:@"favorites/destroy/%u.%@", updateID, API_FORMAT];
+		path = [NSString stringWithFormat:@"favorites/destroy/%lu.%@", updateID, API_FORMAT];
 		requestType = MGTwitterFavoritesDisableRequest;
 	}
 	
-    return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path queryParameters:nil body:nil 
-                            requestType:requestType 
+    return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path queryParameters:nil body:nil
+                            requestType:requestType
                            responseType:MGTwitterStatus];
 }
 
@@ -1548,8 +1385,8 @@
     }
     NSString *path = [NSString stringWithFormat:@"notifications/follow/%@.%@", username, API_FORMAT];
     
-    return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path queryParameters:nil body:nil 
-                            requestType:MGTwitterNotificationsEnableRequest 
+    return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path queryParameters:nil body:nil
+                            requestType:MGTwitterNotificationsEnableRequest
                            responseType:MGTwitterUser];
 }
 
@@ -1561,8 +1398,8 @@
     }
     NSString *path = [NSString stringWithFormat:@"notifications/leave/%@.%@", username, API_FORMAT];
     
-    return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path queryParameters:nil body:nil 
-                            requestType:MGTwitterNotificationsDisableRequest 
+    return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path queryParameters:nil body:nil
+                            requestType:MGTwitterNotificationsDisableRequest
                            responseType:MGTwitterUser];
 }
 
@@ -1578,7 +1415,7 @@
 	
 	NSString *path = [NSString stringWithFormat:@"blocks/create/%@.%@", username, API_FORMAT];
     
-    return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path queryParameters:nil body:nil 
+    return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path queryParameters:nil body:nil
                             requestType:MGTwitterBlockEnableRequest
                            responseType:MGTwitterUser];
 }
@@ -1592,7 +1429,7 @@
 	
 	NSString *path = [NSString stringWithFormat:@"blocks/destroy/%@.%@", username, API_FORMAT];
     
-    return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path queryParameters:nil body:nil 
+    return [self _sendRequestWithMethod:HTTP_POST_METHOD path:path queryParameters:nil body:nil
                             requestType:MGTwitterBlockDisableRequest
                            responseType:MGTwitterUser];
 }
@@ -1605,7 +1442,7 @@
 {
 	NSString *path = [NSString stringWithFormat:@"help/test.%@", API_FORMAT];
 	
-	return [self _sendRequestWithMethod:nil path:path queryParameters:nil body:nil 
+	return [self _sendRequestWithMethod:nil path:path queryParameters:nil body:nil
                             requestType:MGTwitterAccountRequest
                            responseType:MGTwitterMiscellaneous];
 }
@@ -1615,13 +1452,11 @@
 {
 	NSString *path = [NSString stringWithFormat:@"help/downtime_schedule.%@", API_FORMAT];
 	
-	return [self _sendRequestWithMethod:nil path:path queryParameters:nil body:nil 
+	return [self _sendRequestWithMethod:nil path:path queryParameters:nil body:nil
                             requestType:MGTwitterAccountRequest
                            responseType:MGTwitterMiscellaneous];
 }
 
-
-#if YAJL_AVAILABLE
 
 #pragma mark -
 #pragma mark Search API methods
@@ -1680,8 +1515,8 @@
      */
     
 	
-    return [self _sendRequestWithMethod:nil path:path queryParameters:params body:nil 
-                            requestType:MGTwitterSearchRequest 
+    return [self _sendRequestWithMethod:nil path:path queryParameters:params body:nil
+                            requestType:MGTwitterSearchRequest
                            responseType:MGTwitterSearchResults];
 }
 
@@ -1690,12 +1525,10 @@
 {
     NSString *path = [NSString stringWithFormat:@"trends/current.%@", API_FORMAT];
     
-    return [self _sendRequestWithMethod:nil path:path queryParameters:nil body:nil 
-                            requestType:MGTwitterSearchCurrentTrendsRequest 
+    return [self _sendRequestWithMethod:nil path:path queryParameters:nil body:nil
+                            requestType:MGTwitterSearchCurrentTrendsRequest
                            responseType:MGTwitterSearchResults];
 }
 
-
-#endif
 
 @end

@@ -24,3 +24,9 @@ profile
 *.moved-aside
 .DS_Store
 
+/Twitter+OAuth/Libraries & Headers/OAuthConsumer/.svn/
+/OAuthConsumeriPhoneLib/OAuthConsumer-iPhoneLib.xcodeproj/xcuserdata/
+/OAuthConsumeriPhoneLib/OAuthConsumer-iPhoneLib.xcodeproj/project.xcworkspace/
+/Demo/OAuthTwitterDemo.xcodeproj/xcuserdata/
+/Demo/OAuthTwitterDemo.xcodeproj/project.xcworkspace/
+/Demo/build/

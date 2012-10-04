@@ -90,7 +90,7 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 
 
 - (id) initWithEngine: (SA_OAuthTwitterEngine *) engine andOrientation:(UIInterfaceOrientation)theOrientation {
-	if (self = [super init]) {
+	if ((self = [super init])) {
 		self.engine = engine;
 		if (!engine.OAuthSetup) [_engine requestRequestToken];
 		self.orientation = theOrientation;
@@ -171,7 +171,7 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 	label.text = NSLocalizedString(@"Please Wait…", nil);
 	label.backgroundColor = [UIColor clearColor];
 	label.textColor = [UIColor whiteColor];
-	label.textAlignment = UITextAlignmentCenter;
+	label.textAlignment = NSTextAlignmentCenter;
 	label.font = [UIFont boldSystemFontOfSize: 15];
 	[_blockerView addSubview: label];
 	
@@ -341,7 +341,7 @@ Ugly. I apologize for its inelegance. Bleah.
 	NSData				*data = [request HTTPBody];
 	char				*raw = data ? (char *) [data bytes] : "";
 	
-	if (raw && strstr(raw, "cancel=")) {
+	if (raw && (strstr(raw, "cancel=") || strstr(raw, "deny="))) {
 		[self denied];
 		return NO;
 	}

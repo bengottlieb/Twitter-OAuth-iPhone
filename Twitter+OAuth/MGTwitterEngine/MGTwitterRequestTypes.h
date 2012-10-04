@@ -42,10 +42,8 @@ typedef enum _MGTwitterRequestType {
 	MGTwitterBlockEnableRequest, // enable block for the specified user
 	MGTwitterBlockDisableRequest, // disable block for the specified user
     MGTwitterImageRequest, // requesting an image
-#if YAJL_AVAILABLE
 	MGTwitterSearchRequest, // performing a search
 	MGTwitterSearchCurrentTrendsRequest, // getting the current trends
-#endif
 } MGTwitterRequestType;
 
 typedef enum _MGTwitterResponseType {
@@ -58,9 +56,7 @@ typedef enum _MGTwitterResponseType {
     MGTwitterGeneric            = 6,    // a generic response not requiring parsing
 	MGTwitterMiscellaneous		= 8,	// a miscellaneous response of key-value pairs
     MGTwitterImage              = 7,    // an image
-#if YAJL_AVAILABLE
 	MGTwitterSearchResults		= 9,	// search results
-#endif
 } MGTwitterResponseType;
 
 // This key is added to each tweet or direct message returned,

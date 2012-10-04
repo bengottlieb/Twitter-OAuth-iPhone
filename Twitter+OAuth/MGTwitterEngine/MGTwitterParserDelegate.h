@@ -20,9 +20,4 @@
                  ofResponseType:(MGTwitterResponseType)responseType 
                       withError:(NSError *)error;
 
-#if YAJL_AVAILABLE
-- (void)parsedObject:(NSDictionary *)parsedObject forRequest:(NSString *)identifier 
-                    ofResponseType:(MGTwitterResponseType)responseType;
-#endif
-
 @end
