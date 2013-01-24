@@ -33,7 +33,7 @@ static char encodingTable[64] = {
 		unsigned long lentext = 0;
 		unsigned char ch = 0;
 		unsigned char inbuf[4], outbuf[4];
-		short i = 0, ixinbuf = 0;
+		short ixinbuf = 0;
 		BOOL flignore = NO;
 		BOOL flendtext = NO;
 		NSData *base64Data = nil;
@@ -66,20 +66,20 @@ static char encodingTable[64] = {
 					if( ! ixinbuf ) break;
 					if( ( ixinbuf == 1 ) || ( ixinbuf == 2 ) ) ctcharsinbuf = 1;
 					else ctcharsinbuf = 2;
-					ixinbuf = 3;
 					flbreak = YES;
 				}
 
 				inbuf [ixinbuf++] = ch;
 
-				if( ixinbuf == 4 ) {
+				if( ixinbuf == 4 || flbreak ) {
 					ixinbuf = 0;
 					outbuf [0] = ( inbuf[0] << 2 ) | ( ( inbuf[1] & 0x30) >> 4 );
-					outbuf [1] = ( ( inbuf[1] & 0x0F ) << 4 ) | ( ( inbuf[2] & 0x3C ) >> 2 );
-					outbuf [2] = ( ( inbuf[2] & 0x03 ) << 6 ) | ( inbuf[3] & 0x3F );
+					if(1 < ctcharsinbuf)
+						outbuf [1] = ( ( inbuf[1] & 0x0F ) << 4 ) | ( ( inbuf[2] & 0x3C ) >> 2 );
+					if(2 < ctcharsinbuf)
+						outbuf [2] = ( ( inbuf[2] & 0x03 ) << 6 ) | ( inbuf[3] & 0x3F );
 
-					for( i = 0; i < ctcharsinbuf; i++ ) 
-						[mutableData appendBytes:&outbuf[i] length:1];
+					[mutableData appendBytes:&outbuf length:ctcharsinbuf];
 				}
 
 				if( flbreak )  break;
