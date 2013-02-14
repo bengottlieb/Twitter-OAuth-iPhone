@@ -358,7 +358,7 @@
     NSString *result = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL,
                                                                            (CFStringRef)string,
                                                                            NULL,
-                                                                           (CFStringRef)@";/?:@&=$+{}<>,",
+                                                                           (CFStringRef)@";/?:@&=$+{}<>,()",
                                                                            kCFStringEncodingUTF8);
     return [result autorelease];
 }
