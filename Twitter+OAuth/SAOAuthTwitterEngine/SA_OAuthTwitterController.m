@@ -104,8 +104,7 @@ static NSString* const kGGTwitterLoadingBackgroundImage = @"twitter_load.png";
 		_webView.alpha = 0.0;
 		_webView.delegate = self;
 		_webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-		if ([_webView respondsToSelector: @selector(setDetectsPhoneNumbers:)]) [(id) _webView setDetectsPhoneNumbers: NO];
-		if ([_webView respondsToSelector: @selector(setDataDetectorTypes:)]) [(id) _webView setDataDetectorTypes: 0];
+		if ([_webView respondsToSelector: @selector(setDataDetectorTypes:)]) [(UIWebView *) _webView setDataDetectorTypes: 0];
 		
 		NSURLRequest			*request = _engine.authorizeURLRequest;
 		[_webView loadRequest: request];

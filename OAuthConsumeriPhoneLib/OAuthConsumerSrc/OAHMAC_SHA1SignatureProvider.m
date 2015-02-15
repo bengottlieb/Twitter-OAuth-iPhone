@@ -41,7 +41,7 @@
     NSData *secretData = [secret dataUsingEncoding:NSUTF8StringEncoding];
     NSData *clearTextData = [text dataUsingEncoding:NSUTF8StringEncoding];
     unsigned char result[20];
-    hmac_sha1((unsigned char *)[clearTextData bytes], [clearTextData length], (unsigned char *)[secretData bytes], [secretData length], result);
+    hmac_sha1((unsigned char *)[clearTextData bytes], (UInt16) [clearTextData length], (unsigned char *)[secretData bytes], (UInt16) [secretData length], result);
     
     //Base64 Encoding
     

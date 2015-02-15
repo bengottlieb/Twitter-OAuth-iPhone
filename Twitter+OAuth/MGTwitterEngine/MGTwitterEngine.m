@@ -312,7 +312,7 @@
 #pragma mark Connection methods
 
 
-- (int)numberOfConnections
+- (NSUInteger)numberOfConnections
 {
     return [_connections count];
 }
@@ -794,7 +794,7 @@
     
     // Get response code.
     NSHTTPURLResponse *resp = (NSHTTPURLResponse *)response;
-    int statusCode = [resp statusCode];
+    NSUInteger statusCode = [resp statusCode];
     
     if (statusCode >= 400) {
         // Assume failure, and report to delegate.

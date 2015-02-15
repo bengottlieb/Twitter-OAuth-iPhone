@@ -46,7 +46,7 @@ unsigned char k_opad[B + 1]; /* outer padding - key XORd with opad */
 if (inKeyLength > B)
 	{
 	SHA1Init(&theSHA1Context);
-	SHA1Update(&theSHA1Context, inKey, inKeyLength);
+	SHA1Update(&theSHA1Context, inKey, (unsigned int) inKeyLength);
 	SHA1Final(inKey, &theSHA1Context);
 	inKeyLength = L;
 	}
@@ -70,7 +70,7 @@ for (i = 0; i < B; i++)
 */
 SHA1Init(&theSHA1Context);                 /* init context for 1st pass */
 SHA1Update(&theSHA1Context, k_ipad, B);     /* start with inner pad */
-SHA1Update(&theSHA1Context, (unsigned char *)inText, inTextLength); /* then text of datagram */
+SHA1Update(&theSHA1Context, (unsigned char *)inText, (unsigned int) inTextLength); /* then text of datagram */
 SHA1Final((unsigned char *)outDigest, &theSHA1Context);                /* finish up 1st pass */
 
 /*

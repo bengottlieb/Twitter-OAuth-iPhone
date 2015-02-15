@@ -161,7 +161,7 @@ signatureProvider:(id<OASignatureProviding, NSObject>)aProvider
 
 - (void)_generateTimestamp 
 {
-    timestamp = [[NSString stringWithFormat:@"%d", time(NULL)] retain];
+    timestamp = [[NSString stringWithFormat:@"%ld", time(NULL)] retain];
 }
 
 - (void)_generateNonce 
@@ -270,7 +270,7 @@ signatureProvider:(id<OASignatureProviding, NSObject>)aProvider
         // POST, PUT
         NSData *postData = [encodedParameterPairs dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
         [self setHTTPBody:postData];
-        [self setValue:[NSString stringWithFormat:@"%d", [postData length]] forHTTPHeaderField:@"Content-Length"];
+        [self setValue:[NSString stringWithFormat:@"%d", (UInt16) [postData length]] forHTTPHeaderField:@"Content-Length"];
         [self setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     }
 }

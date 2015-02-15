@@ -71,7 +71,7 @@
 	UIViewController			*controller = [SA_OAuthTwitterController controllerToEnterCredentialsWithTwitterEngine: _engine delegate: self];
 	
 	if (controller) 
-		[self presentModalViewController: controller animated: YES];
+		[self presentViewController: controller animated: YES completion: nil];
 	else {
 		[_engine sendUpdate: [NSString stringWithFormat: @"Already Updated. %@", [NSDate date]]];
 	}
