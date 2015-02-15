@@ -1,6 +1,6 @@
 Twitter+OAuth Source and Example for iPhone
 Glommed together by Ben Gottlieb
-copyright 2009 Stand Alone, Inc - all rights reserved.
+copyright 2009-2015 Stand Alone, Inc - all rights reserved.
 License: BSD, If you use it, please include the following text somewhere in your application's user-facing text:
 "Includes Twitter+OAuth code by Ben Gottlieb"
 
@@ -16,6 +16,7 @@ Ben Gottlieb
 ben@standalone.com
 
 == Major Changes Log ==
+2/14/15					- updated for 64 bit ARM and iOS 8
 2/24/10					- added additional PIN checks in case Twitter changes the way they pass the PIN back
 					- if all else fails, prompt the user to copy their PIN. The app will grab this and use it
 					- this last part only works on OS 3.x and later, Everything else should work fine on 2.x.
