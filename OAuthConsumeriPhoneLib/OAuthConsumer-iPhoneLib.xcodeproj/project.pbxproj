@@ -6,6 +6,20 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		B5A06AF61A924149002939A3 /* Build Combined */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = B5A06AF91A924149002939A3 /* Build configuration list for PBXAggregateTarget "Build Combined" */;
+			buildPhases = (
+				B5A06AFB1A9241E5002939A3 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = "Build Combined";
+			productName = "Build Combined";
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		2525FC44106D55680069EBED /* Base64Transcoder.c in Sources */ = {isa = PBXBuildFile; fileRef = 2525FC22106D55680069EBED /* Base64Transcoder.c */; };
 		2525FC45106D55680069EBED /* Base64Transcoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 2525FC23106D55680069EBED /* Base64Transcoder.h */; };
@@ -41,6 +55,7 @@
 		2525FC65106D55680069EBED /* OAuthConsumer.h in Headers */ = {isa = PBXBuildFile; fileRef = 2525FC43106D55680069EBED /* OAuthConsumer.h */; };
 		AA747D9F0F9514B9006C5449 /* OAuthConsumer_iPhone_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* OAuthConsumer_iPhone_Prefix.pch */; };
 		AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
+		B5A69DAE1A9211030026B7B9 /* libcommonCrypto.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B5A69DAD1A9211030026B7B9 /* libcommonCrypto.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -79,6 +94,8 @@
 		2525FC75106D56210069EBED /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		AA747D9E0F9514B9006C5449 /* OAuthConsumer_iPhone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OAuthConsumer_iPhone_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		B5A06AFA1A924177002939A3 /* BuildCombined.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = BuildCombined.sh; sourceTree = "<group>"; };
+		B5A69DAD1A9211030026B7B9 /* libcommonCrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcommonCrypto.dylib; path = usr/lib/system/libcommonCrypto.dylib; sourceTree = SDKROOT; };
 		D2AAC07E0554694100DB518D /* libOAuthConsumer_iPhone.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libOAuthConsumer_iPhone.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -87,6 +104,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B5A69DAE1A9211030026B7B9 /* libcommonCrypto.dylib in Frameworks */,
 				AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -105,6 +123,7 @@
 		0867D691FE84028FC02AAC07 /* OAuthConsumer-iPhone */ = {
 			isa = PBXGroup;
 			children = (
+				B5A06AFA1A924177002939A3 /* BuildCombined.sh */,
 				2525FC20106D55680069EBED /* OAuthConsumerSrc */,
 				32C88DFF0371C24200C91783 /* Other Sources */,
 				0867D69AFE84028FC02AAC07 /* Frameworks */,
@@ -117,6 +136,7 @@
 		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B5A69DAD1A9211030026B7B9 /* libcommonCrypto.dylib */,
 				AACBBE490F95108600F1A2B1 /* Foundation.framework */,
 			);
 			name = Frameworks;
@@ -232,6 +252,11 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0610;
+				TargetAttributes = {
+					B5A06AF61A924149002939A3 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+				};
 			};
 			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "OAuthConsumer-iPhoneLib" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -246,9 +271,26 @@
 			projectRoot = "";
 			targets = (
 				D2AAC07D0554694100DB518D /* OAuthLib */,
+				B5A06AF61A924149002939A3 /* Build Combined */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		B5A06AFB1A9241E5002939A3 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = ./BuildCombined.sh;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		D2AAC07B0554694100DB518D /* Sources */ = {
@@ -289,6 +331,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = OAuthConsumer_iPhone_Prefix.pch;
 				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SDKROOT)/usr/lib/system",
+				);
 				PRODUCT_NAME = OAuthConsumer_iPhone;
 				SDKROOT = iphoneos;
 			};
@@ -304,6 +350,10 @@
 				GCC_PREFIX_HEADER = OAuthConsumer_iPhone_Prefix.pch;
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SDKROOT)/usr/lib/system",
+				);
 				PRODUCT_NAME = OAuthConsumer_iPhone;
 				SDKROOT = iphoneos;
 			};
@@ -335,6 +385,20 @@
 			};
 			name = Release;
 		};
+		B5A06AF71A924149002939A3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		B5A06AF81A924149002939A3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -355,6 +419,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		B5A06AF91A924149002939A3 /* Build configuration list for PBXAggregateTarget "Build Combined" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B5A06AF71A924149002939A3 /* Debug */,
+				B5A06AF81A924149002939A3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};
