@@ -10,6 +10,7 @@
 #import "MGTwitterHTTPURLConnection.h"
 
 #import "NSData+Base64.h"
+#import "TwitterText.h"
 
 #define USE_LIBXML 0
 
@@ -442,6 +443,14 @@
     }
     
     return [connection identifier];
+}
+
+- (NSString *)truncateStatusMessage:(NSString *)status {
+    if ([TwitterText remainingCharacterCount:status] < 0) {
+        return [status substringToIndex:MAX_MESSAGE_LENGTH];
+    } else {
+        return status;
+    }
 }
 
 
@@ -1022,10 +1031,7 @@
     
     NSString *path = [NSString stringWithFormat:@"statuses/update.%@", API_FORMAT];
     
-    NSString *trimmedText = status;
-    if ([trimmedText length] > MAX_MESSAGE_LENGTH) {
-        trimmedText = [trimmedText substringToIndex:MAX_MESSAGE_LENGTH];
-    }
+    NSString *trimmedText = [self truncateStatusMessage:status];
     
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:0];
     [params setObject:trimmedText forKey:@"status"];
@@ -1253,10 +1259,7 @@
     
     NSString *path = [NSString stringWithFormat:@"direct_messages/new.%@", API_FORMAT];
     
-    NSString *trimmedText = message;
-    if ([trimmedText length] > MAX_MESSAGE_LENGTH) {
-        trimmedText = [trimmedText substringToIndex:MAX_MESSAGE_LENGTH];
-    }
+    NSString *trimmedText = [self truncateStatusMessage:message];
     
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:0];
     [params setObject:trimmedText forKey:@"text"];
