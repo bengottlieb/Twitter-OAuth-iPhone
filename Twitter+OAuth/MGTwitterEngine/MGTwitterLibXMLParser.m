@@ -50,6 +50,7 @@ connectionIdentifier:(NSString *)theIdentifier requestType:(MGTwitterRequestType
 		_reader = xmlReaderForMemory([xml bytes], (int) [xml length], [[URL absoluteString] UTF8String], nil, XML_PARSE_NOBLANKS | XML_PARSE_NOCDATA | XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
 		if (! _reader)
 		{
+			[self release];
 			return nil;
 		}
 
